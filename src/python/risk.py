@@ -1,20 +1,34 @@
-"""2023 코드의 단계 경계값과 사람수/설정면적 산식을 보존한 순수 계산부."""
+"""Final presentation's headcount stages + the original fixed-area density formula.
+
+The 2023 final PPT states 안전 1-2, 경고 3-4, 위험 5+ people.
+The historical main.py calculated crowd_density = people_count / total_area
+using a configured constant. These are separate outputs; the old source's
+thresholds on density (<=2, <4) conflict with the final presentation.
+"""
+
+SAFE_MAX_PEOPLE = 2
+DANGER_MIN_PEOPLE = 5
+
+
 def calculate_density(people_count, total_area):
-    if total_area <= 0:
-        raise ValueError('total_area must be greater than 0')
     if people_count < 0:
         raise ValueError('people_count must not be negative')
+    if total_area <= 0:
+        raise ValueError('fixed total_area must be greater than zero')
     return people_count / total_area
 
-def danger_level(density, safe_max=2.0, danger_min=4.0):
-    if safe_max >= danger_min:
-        raise ValueError('safe_max must be less than danger_min')
-    if density <= safe_max:
+
+def danger_level(people_count):
+    """Demonstration stages from the 2023 final PPT, 0 people is safe."""
+    if people_count < 0:
+        raise ValueError('people_count must not be negative')
+    if people_count <= SAFE_MAX_PEOPLE:
         return '안전'
-    if density < danger_min:
+    if people_count < DANGER_MIN_PEOPLE:
         return '경고'
     return '위험'
 
-def evaluate(people_count, total_area, safe_max=2.0, danger_min=4.0):
-    density = calculate_density(people_count, total_area)
-    return density, danger_level(density, safe_max, danger_min)
+
+def evaluate(people_count, total_area):
+    """Return (fixed-area density, final-presentation risk level)."""
+    return calculate_density(people_count, total_area), danger_level(people_count)

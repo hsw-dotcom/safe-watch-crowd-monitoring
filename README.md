@@ -1,57 +1,41 @@
-# Safe Watch — 2023 군중 밀집도 감지 카메라 코드 복원본
+# Safe Watch (2023) — 최종 발표 기준 코드 복원본
 
-> **코드 복원 및 정리 프로젝트**입니다. 원본 Raspberry Pi·카메라·TFLite 모델 등 하드웨어/모델은 현재 없으며, **실장 동작과 2023년 실측 성능을 검증한 프로젝트가 아닙니다.** 2023년 프로젝트 대화와 보관 소스에 근거해 재구성한 코드로, 정확한 역사적 원본과 혼동하지 않습니다.
+**목표: 당시 캡스톤의 기능·방법을 최대한 정확하게 기록하는 것.**
+실물 Raspberry Pi·모델·DB 없이 코드를 보존하고 검토합니다. 2023년 원본을 그대로 재현했다고 주장하지 않습니다.
 
-## 구성
+- **최종 발표가 우선**: 안전 0~2명, 경고 3~4명, 위험 5명 이상 (최종 PPT는 안전 1~2명으로 설명; 0명도 안전 처리)
+- **고정 면적 300**: 원본 `configs.ini` 고정값을 사용해 밀집도는 `감지 인원 / 300`. 장애물 면적 차감이나 실시간 면적 재계산 없음
+- **모델 그대로 사용**: 학습/추출된 `people_detect.tflite` 파일을 불러오기만 하며 모델 업데이트·재학습 없음
+- **이미지 덮어쓰기**: `before.jpg`와 `/tensorflow/after.jpg`를 프레임마다 직접 갱신
+- **경고 반복**: 당시 `alarm.py`처럼 10초마다 위험을 확인하고 위험이면 다시 알림; SMS는 사고 방지를 위해 기본 비활성
+- **변화율**: 기존 SQL의 직전 행 조회와 백분율 계산 유지. 직전값 0에 대한 별도 나눗셈 방어는 당시 구현이 아니었음
+
+## 파일 배치 (중복 정리 유지)
 
 ```text
 src/python/    main.py, count_objects.py, stream.py, alarm.py, db.py, risk.py, settings.py, configs.ini
-src/web/       index.html, graph.html, map.html, image.html, api.php, assets/
+src/web/       index.html, image.html, graph.html, map.html, api.php, assets/
 database/      schema.sql
-tests/         Python 순수 로직 테스트, 웹 구조 확인
- docs/          근거와 원본 보존 지점, 변경표, 검증 범위
-.env.example   개발자가 직접 제공할 환경변수 이름만
+tests/         순수 Python 로직 및 정적 파일 구조 검사
+docs/          최종 PPT 대조, 코드 출처, 원본 보관 이력
+.env.example   실제 비밀번호가 없는 설정 이름
 ```
 
-### 코드 역할 (각 기능은 한 곳에서 관리)
-- `src/python/main.py` — 1회 프레임 획득 → 사람 감지 → 위험 계산 → DB 저장 (합성 데이터만 쓰는 `--dry-run` 제공)
-- `src/python/count_objects.py` — TFLite 인식 및 `before.jpg`→`after.jpg` 저장 경로
-- `src/python/risk.py` — 사람이 계산/위험 경계를 담당하는 유일한 함수 모듈
-- `src/python/db.py` — Python 측 MariaDB INSERT / 최근 데이터 SELECT
-- `src/python/stream.py` — Picamera2 MJPEG 스트리밍(원본 구조 보존; 실행 검증 안 함)
-- `src/python/alarm.py` — 경고음/Twilio 전송 경로(기본 비활성·반복 발송 방지)
-- `src/web/index.html` + `assets/dashboard.js` — 단일 대시보드
-- `src/web/graph.html` + `assets/chart.js` — 2개 그래프를 단일 화면, 단일 조회로 관리
-- `src/web/api.php` — 단일 PHP API `?view=latest`, `?view=history` (Python용 `db.py`와는 별도 프로세스의 코드)
-- `src/web/image.html` — `/tensorflow/after.jpg`를 2초마다 캐시 방지 쿼리로 갱신
+`src/python/main.py`는 영상에서 프레임을 얻고, TFLite 사람 수를 읽고, 정해진 면적과 인원 수에 따라 밀집도·위험을 계산해 DB에 기록합니다. `src/python/alarm.py`는 DB 위험 행을 주기적으로 확인합니다. 웹은 원래 PHP·Nginx·MariaDB 구조를 따라 상태/그래프/지도/이미지를 제공하되, 중복된 역할의 페이지는 하나로 합쳤습니다. 웹 통합 API와 브라우저 데모는 후대의 코드 정리 방법입니다.
 
-## 하드웨어 없이 코드와 화면 보기
+## 하드웨어 없는 검증
 
 ```bash
 python -m unittest discover -s tests -v
 python tests/verify_structure.py
-python src/python/main.py --dry-run --iterations 3
+python src/python/main.py --dry-run --iterations 7
 python -m http.server 8080 --directory src/web
 ```
 
-마지막 명령을 실행한 후 `http://localhost:8080/index.html?demo=1`과 `http://localhost:8080/graph.html?demo=1`을 열 수 있습니다. **예시 JSON 값은 합성 데이터이며 2023년 실제 측정이나 모델 인식 결과가 아닙니다.** 그래프는 CDN Chart.js를 사용하므로 외부 네트워크 연결이 필요할 수 있습니다.
+웹의 `http://localhost:8080/index.html?demo=1`과 `graph.html?demo=1`은 **합성 예시**만 보여줍니다. 이 예시와 테스트는 실제 2023년 측정이나 성능 결과가 아닙니다. 그래프는 Chart.js CDN을 참조합니다.
 
-실제 모드(`demo=1` 없음)는 PHP/MariaDB/카메라·모델·네트워크·경고 음원을 필요로 하지만, 보존 목적일 뿐 현재 구동 검증은 하지 않았습니다.
+## 출처, 차이점, 주의
 
-## 중복 제거 요약
+[최종 발표 우선 복원 근거](docs/PRESENTATION_PRIORITY.md) · [복원 출처](docs/PROVENANCE.md) · [검사](docs/VALIDATION.md) · [2023년 원본 보관](docs/ARCHIVE.md)
 
-| 이전 중복/불필요 항목 | 통합 결과 |
-| --- | --- |
-| 2023 보관 소스 `src/` + 재구성본 `reconstructed/` | 메인에는 복원본 `src/` 하나만 유지; 과거 원본은 별도 보관 브랜치와 커밋으로 추적 |
-| `index.html`, `maininfo.html` 상태 화면 | `index.html` |
-| `density.html`, `change.html`, iframe식 `graph.html` | 2개 캔버스를 가진 `graph.html` |
-| `densityinfo.php`, `changeinfo.php`, `maininfo.php`, `db_connect.php` | `api.php`에 안전한 읽기 전용 데이터 조회 통합 |
-| 선택용 Flask `app.py`, `alarm.py` 문자 기능 중복 | `alarm.py`만 유지, Flask 재구성본은 제거 |
-| `image.php` (실제는 HTML) | `image.html` |
-| Nginx/systemd/DMZ 예시와 수동 DB 마이그레이션 | 코드 복원본에서 제거; 보관 브랜치에 남김 |
-
-## 복원 근거와 범위
-
-[원본 및 보완 근거](docs/PROVENANCE.md) · [검증 결과](docs/VALIDATION.md) · [보관본 안내](docs/ARCHIVE.md)
-
-**주의:** 원본 SQL의 위험 임계값(안전 ≤2, 경고 <4, 위험 ≥4)과 `people_count / total_area`는 2023년 코드 구조를 따른 임의 산식이며 실제 군중 안전 기준으로 사용해서는 안 됩니다. 모델/라벨·경고음·실제 시크릿은 저장소에 포함하지 않습니다.
+2023년 소스 파일은 GitHub `archive/pre-dedup-20261031` 브랜치에 보존되었습니다. 원본은 변경하지 않았고 이 `main`은 **최종 발표 내용과 원본 사이의 불일치를 명시적으로 해소한 코드 복원본**입니다. 사람 수 기준은 역사적 시연의 기술이지 보편적 인명 안전 기준이 아닙니다.

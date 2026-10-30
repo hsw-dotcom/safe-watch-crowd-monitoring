@@ -7,10 +7,11 @@ ROOT=Path(__file__).resolve().parents[1]
 WEB=ROOT/'src'/'web'
 
 class ContractTest(unittest.TestCase):
-    def test_demo_fixture_and_legacy_risk(self):
+    def test_demo_fixture_and_presentation_risk(self):
         data=json.loads((WEB/'assets/demo-data.json').read_text(encoding='utf-8'))
-        self.assertEqual(data['latest']['danger_level'], '경고')
-        self.assertAlmostEqual(data['latest']['people_count']/300, data['latest']['crowd_density'])
+        self.assertEqual(data['latest']['danger_level'], '위험')
+        self.assertAlmostEqual(6/300, data['latest']['crowd_density'])
+        self.assertNotIn('people_count',data['latest'])
         self.assertEqual(len(data['history']), 7)
 
     def test_one_php_api(self):

@@ -33,7 +33,7 @@ try {
     $camera = max(1, (int)(getenv('SAFEWATCH_CAMERA_NUMBER') ?: 1));
     try {
         if ($view === 'latest') {
-            $sql = "SELECT id, camera_number, people_count, crowd_density, danger_level,
+            $sql = "SELECT id, camera_number, crowd_density, danger_level,
                            DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') AS update_time
                     FROM receive_data WHERE camera_number = ? ORDER BY id DESC LIMIT 1";
             $stmt = $db->prepare($sql);
@@ -43,14 +43,13 @@ try {
             if ($row !== null) {
                 $row['id'] = (int)$row['id'];
                 $row['camera_number'] = (int)$row['camera_number'];
-                $row['people_count'] = (int)$row['people_count'];
                 $row['crowd_density'] = (float)$row['crowd_density'];
             }
             $stmt->close();
             respond($row);
         } else {
-            $sql = "SELECT id, crowd_density, change_amount, change_rate,
-                           DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') AS time_label
+            $sql = "SELECT id, crowd_density, change_rate,
+                           update_time AS time_label
                     FROM density WHERE camera_number = ? ORDER BY id DESC LIMIT 20";
             $stmt = $db->prepare($sql);
             $stmt->bind_param('i', $camera);
@@ -60,7 +59,6 @@ try {
             foreach ($rows as &$row) {
                 $row['id'] = (int)$row['id'];
                 $row['crowd_density'] = (float)$row['crowd_density'];
-                $row['change_amount'] = $row['change_amount'] === null ? null : (float)$row['change_amount'];
                 $row['change_rate'] = $row['change_rate'] === null ? null : (float)$row['change_rate'];
             }
             unset($row);

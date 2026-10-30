@@ -42,7 +42,6 @@ async function refresh() {
     const row = await getLatest();
     if (!row) { $('error').textContent = '측정 데이터가 없습니다.'; return; }
     const level = row.danger_level;
-    $('people').textContent = fmt(row.people_count);
     $('density').textContent = Number(row.crowd_density).toFixed(4);
     $('level').textContent = fmt(level);
     $('measured').textContent = fmt(row.update_time);

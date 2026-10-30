@@ -1,41 +1,45 @@
-"""Executable CPU-only tests; do not imply Pi camera/model/SMS has been tested."""
+"""Offline verification of the 2023 final presentation's risk boundaries."""
 from pathlib import Path
 import sys
 import unittest
 
-SRC = Path(__file__).resolve().parents[1] / 'src' / 'python'
-sys.path.insert(0, str(SRC))
+SRC=Path(__file__).resolve().parents[1] / 'src' / 'python'
+sys.path.insert(0,str(SRC))
 from risk import calculate_density, danger_level, evaluate
 from settings import load_config
-from alarm import should_alert
+from alarm import alert_if_danger
 
-class RiskTest(unittest.TestCase):
-    def test_calculate(self):
-        self.assertEqual(calculate_density(10, 5), 2.0)
-        self.assertEqual(calculate_density(0, 100), 0.0)
 
-    def test_boundaries(self):
-        self.assertEqual(danger_level(2), '안전')
-        self.assertEqual(danger_level(2.01), '경고')
-        self.assertEqual(danger_level(3.99), '경고')
-        self.assertEqual(danger_level(4), '위험')
+class PresentationRiskTest(unittest.TestCase):
+    def test_final_slide_stages(self):
+        for count, expected in ((0,'안전'),(1,'안전'),(2,'안전'),(3,'경고'),(4,'경고'),(5,'위험'),(6,'위험')):
+            with self.subTest(count=count):
+                self.assertEqual(danger_level(count),expected)
 
-    def test_input_validation(self):
-        with self.assertRaises(ValueError): calculate_density(1, 0)
-        with self.assertRaises(ValueError): calculate_density(-1, 5)
-        with self.assertRaises(ValueError): danger_level(2, 4, 2)
+    def test_area_fixed_only_for_density(self):
+        self.assertAlmostEqual(calculate_density(5,300),5/300)
+        self.assertEqual(evaluate(5,300)[1],'위험')
+        self.assertEqual(evaluate(3,300)[1],'경고')
+        self.assertEqual(evaluate(2,300)[1],'안전')
 
-    def test_config_historical_defaults(self):
-        cfg = load_config()
-        self.assertEqual(cfg.delay, 15)
-        self.assertEqual(cfg.total_area, 300)
-        self.assertEqual(cfg.stream_url.endswith('/stream.mjpg'), True)
+    def test_negative_count_rejected(self):
+        with self.assertRaises(ValueError): danger_level(-1)
+        with self.assertRaises(ValueError): calculate_density(-1,300)
+        with self.assertRaises(ValueError): calculate_density(1,0)
 
-    def test_alarm_transition_and_cooldown(self):
-        danger = {'id': 101, 'danger_level':'위험'}
-        self.assertTrue(should_alert(100, '안전', danger, 0, 400, 300))
-        self.assertFalse(should_alert(101, '위험', danger, 0, 400, 300))
-        self.assertFalse(should_alert(100, '안전', danger, 400, 401, 300))
-        self.assertFalse(should_alert(100, '안전', {'id': 101, 'danger_level':'경고'}, 0, 400, 300))
+    def test_historical_fixed_defaults(self):
+        cfg=load_config()
+        self.assertEqual(cfg.delay,15)
+        self.assertEqual(cfg.total_area,300)
+        self.assertEqual(cfg.max_iterations,100)
 
-if __name__ == '__main__': unittest.main()
+    def test_original_repeated_alert_behavior(self):
+        calls=[]
+        def sound(): calls.append('sound')
+        def sms(level): calls.append(level)
+        self.assertFalse(alert_if_danger('경고',sound=sound,sms=sms))
+        self.assertTrue(alert_if_danger('위험',sound=sound,sms=sms))
+        self.assertTrue(alert_if_danger('위험',sound=sound,sms=sms))
+        self.assertEqual(calls,['위험','sound','위험','sound'])
+
+if __name__=='__main__':unittest.main()
