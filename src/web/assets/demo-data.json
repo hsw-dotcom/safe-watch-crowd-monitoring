@@ -1,0 +1,17 @@
+{
+  "notice": "SYNTHETIC DEMONSTRATION DATA - not a measurement from 2023",
+  "latest": {
+    "id": 999, "camera_number": 1, "people_count": 850,
+    "crowd_density": 2.8333333333, "danger_level": "경고",
+    "update_time": "2023-06-01 12:00:00"
+  },
+  "history": [
+    {"id": 993, "time_label": "2023-06-01 11:30:00", "crowd_density": 0.0, "change_amount": null, "change_rate": null},
+    {"id": 994, "time_label": "2023-06-01 11:35:00", "crowd_density": 0.5, "change_amount": 0.5, "change_rate": null},
+    {"id": 995, "time_label": "2023-06-01 11:40:00", "crowd_density": 1.0, "change_amount": 0.5, "change_rate": 100.0},
+    {"id": 996, "time_label": "2023-06-01 11:45:00", "crowd_density": 1.5, "change_amount": 0.5, "change_rate": 50.0},
+    {"id": 997, "time_label": "2023-06-01 11:50:00", "crowd_density": 2.0, "change_amount": 0.5, "change_rate": 33.33},
+    {"id": 998, "time_label": "2023-06-01 11:55:00", "crowd_density": 2.5, "change_amount": 0.5, "change_rate": 25.0},
+    {"id": 999, "time_label": "2023-06-01 12:00:00", "crowd_density": 2.8333333333, "change_amount": 0.3333333333, "change_rate": 13.33}
+  ]
+}

@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 import unittest
 
-SRC = Path(__file__).resolve().parents[1] / '01_raspberry_pi_project'
+SRC = Path(__file__).resolve().parents[1] / 'src' / 'python'
 sys.path.insert(0, str(SRC))
 from risk import calculate_density, danger_level, evaluate
 from settings import load_config

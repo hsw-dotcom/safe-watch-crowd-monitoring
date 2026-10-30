@@ -1,121 +1,21 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Safe Watch - 밀집도 그래프</title>
-  
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-    }
-    
-    #header {
-      background-color: #333;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      font-size: 22px;
-    }
-
-    h1 {
-      margin: 0;
-    }
-
-    #content {
-      padding: 10px;
-      text-align: center;
-    }
-    p {
-      font-size: 20px;
-      font-weight: bold;
-      margin: 10px;
-    }
-
-
-@media screen and (min-width:1200px) {
-    .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-   }
-
-   .dgree-column {
-     width: 49%;
-     height: 650px;
-   }
-
-   .change-column {
-     width: 49%;
-     height: 650px;
-   }
-
-   }
-
- @media screen and (min-width:600px) and (max-width:1199px) {
- .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 20px;
-   }
-
-   .dgree-column {
-     width: 47%;
-     height: 350px;
-   }
-
-   .change-column {
-     width: 47%;
-     height: 350px;
-   }
-  }
-
-@media screen and (max-width:599px) {
- .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 20px;
-   }
-
-   .dgree-column {
-     width: 67%;
-     height: 230px;
-   }
-
-   .change-column {
-     width: 67%;
-     height: 230px;
-   }
-   }
-  </style>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-  <div id="header">
-    <h1>Safe Watch</h1>
-    <p style="text-align: center; font-size: 18px; margin-top: 10px;">
-      밀집도 그래프 페이지입니다.
-    </p>
-  </div>
-
-  <div id="content">
-<p class="info">구역 : 명지대학교 골목 1</p>
-<div class="container">
-  <div class="dgree-column">
-    <iframe src="density.html" width="100%" height="100%"></iframe>
- </div>
-  <div class="change-column">
-    <iframe src="change.html" width="100%" height="100%"></iframe>
- </div>
- </div>
-    <a href="index.html" title="메인 페이지로 돌아가기"><button class="button" id="home-btn">메인 페이지로 돌아가기</button></a>
-  </div>
-
+  <header><h1>Safe Watch · 밀집도 그래프</h1><p>2023 캡스톤 코드 재구성</p></header>
+  <main>
+    <p id="demo-label" class="details" hidden>예시 데이터입니다. 실제 측정 결과가 아닙니다.</p>
+    <div class="cameras">
+      <section class="panel"><h2>군중 밀집도</h2><div class="chartbox"><canvas id="density-chart"></canvas></div></section>
+      <section class="panel"><h2>밀집도 변화율 (%)</h2><div class="chartbox"><canvas id="change-chart"></canvas></div></section>
+    </div>
+    <p id="chart-error" class="details" aria-live="polite"></p>
+    <div class="menu"><a id="home-link" href="index.html">메인 페이지로 돌아가기</a></div>
+  </main>
+  <script src="assets/chart.js"></script>
+</body></html>

@@ -1,90 +1,57 @@
-# Safe Watch — Crowd Density Monitoring (2023 Capstone)
+# Safe Watch — 2023 군중 밀집도 감지 카메라 코드 복원본
 
-> **Archive of a 2023 university capstone prototype.** This repository documents the implementation and test evidence from that time. **It is not a currently running or end-to-end reproducible application.** The original Raspberry Pi is not available. The TFLite model, label file, and WAV alarm were recovered in a separate private backup, but are intentionally excluded from this public repository; the Flask API server source remains missing.
+> **코드 복원 및 정리 프로젝트**입니다. 원본 Raspberry Pi·카메라·TFLite 모델 등 하드웨어/모델은 현재 없으며, **실장 동작과 2023년 실측 성능을 검증한 프로젝트가 아닙니다.** 2023년 프로젝트 대화와 보관 소스에 근거해 재구성한 코드로, 정확한 역사적 원본과 혼동하지 않습니다.
 
-## Overview
-
-Safe Watch attempted to monitor a camera scene, count detected people with a TensorFlow Lite model, calculate a density indicator, record results in MariaDB, and display live camera video and monitoring information through Nginx/PHP/AJAX. The 4-person team also developed risk-level alerts and tested the prototype indoors and outdoors.
-
-The project was performed in **March–June 2023** as a **4-person university capstone**.
-
-## Historical architecture
+## 구성
 
 ```text
-Raspberry Pi 4 + Camera Module 3
-    ├─ stream.py : Picamera2 → MJPEG HTTP stream (port 8000)
-    │      ├─ Browser iframe: live camera view
-    │      └─ main.py: capture a frame → before.jpg
-    └─ main.py → count_objects.py (TensorFlow Lite detection)
-                       └─ detected people count → configured area ratio → risk level
-                                └─ MariaDB: receive_data / cameras / density VIEW
-                                        ├─ Nginx + PHP + AJAX → dashboard and graphs
-                                        └─ alarm.py → WAV audio / Twilio SMS (code path)
+src/python/    main.py, count_objects.py, stream.py, alarm.py, db.py, risk.py, settings.py, configs.ini
+src/web/       index.html, graph.html, map.html, image.html, api.php, assets/
+database/      schema.sql
+ tests/         Python 순수 로직 테스트, 웹 구조 확인
+ docs/          근거와 원본 보존 지점, 변경표, 검증 범위
+.env.example   개발자가 직접 제공할 환경변수 이름만
 ```
 
-**Important:** Image analysis was periodic rather than true 1-second inference. The supplied `configs.ini` has `delay=15`; the personal report shows a historical `delay=10`. Processing time is additional to the sleep in the submitted code.
+### 코드 역할 (각 기능은 한 곳에서 관리)
+- `src/python/main.py` — 1회 프레임 획득 → 사람 감지 → 위험 계산 → DB 저장 (합성 데이터만 쓰는 `--dry-run` 제공)
+- `src/python/count_objects.py` — TFLite 인식 및 `before.jpg`→`after.jpg` 저장 경로
+- `src/python/risk.py` — 사람이 계산/위험 경계를 담당하는 유일한 함수 모듈
+- `src/python/db.py` — Python 측 MariaDB INSERT / 최근 데이터 SELECT
+- `src/python/stream.py` — Picamera2 MJPEG 스트리밍(원본 구조 보존; 실행 검증 안 함)
+- `src/python/alarm.py` — 경고음/Twilio 전송 경로(기본 비활성·반복 발송 방지)
+- `src/web/index.html` + `assets/dashboard.js` — 단일 대시보드
+- `src/web/graph.html` + `assets/chart.js` — 2개 그래프를 단일 화면, 단일 조회로 관리
+- `src/web/api.php` — 단일 PHP API `?view=latest`, `?view=history` (Python용 `db.py`와는 별도 프로세스의 코드)
+- `src/web/image.html` — `/tensorflow/after.jpg`를 2초마다 캐시 방지 쿼리로 갱신
 
-## Technologies
+## 하드웨어 없이 코드와 화면 보기
 
-- Hardware/OS: Raspberry Pi 4, Camera Module 3, Raspberry Pi OS/Raspbian, VNC, SSH
-- Application: Python, Picamera2, OpenCV, TensorFlow Lite, Nginx, PHP, HTML/CSS/JavaScript, AJAX, Chart.js
-- Data: MariaDB, `mysql.connector`, PHP MySQLi, SQL tables and VIEW
-- Alert: USB speaker using `aplay`, Twilio SMS integration code; **historical SMS receipt independently evidenced by a phone screenshot**
+```bash
+python -m unittest discover -s tests -v
+python tests/verify_structure.py
+python src/python/main.py --dry-run --iterations 3
+python -m http.server 8080 --directory src/web
+```
 
-## Work division (from contemporaneous final report)
+마지막 명령을 실행한 후 `http://localhost:8080/index.html?demo=1`과 `http://localhost:8080/graph.html?demo=1`을 열 수 있습니다. **예시 JSON 값은 합성 데이터이며 2023년 실제 측정이나 모델 인식 결과가 아닙니다.** 그래프는 CDN Chart.js를 사용하므로 외부 네트워크 연결이 필요할 수 있습니다.
 
-| Workstream | Assigned role |
-|---|---|
-| Web server and database research/build, dynamic PHP/AJAX pages | Repository owner's documented responsibility |
-| Camera MJPEG streaming integration, alert/SMS implementation | Repository owner's documented responsibility |
-| Model training, datasets and model deployment | Other team member |
-| Density calculation rule research | Other team member |
-| Raspberry Pi hardware procurement and initial connections | Other team member |
+실제 모드(`demo=1` 없음)는 PHP/MariaDB/카메라·모델·네트워크·경고 음원을 필요로 하지만, 보존 목적일 뿐 현재 구동 검증은 하지 않았습니다.
 
-The submitted code is an archive of **team output**; file authorship cannot be independently established for every line. The original report documents the owner's responsibilities, not exclusive authorship of all uploaded code.
+## 중복 제거 요약
 
-## Evidence and verified scope
+| 이전 중복/불필요 항목 | 통합 결과 |
+| --- | --- |
+| 2023 보관 소스 `src/` + 재구성본 `reconstructed/` | 메인에는 복원본 `src/` 하나만 유지; 과거 원본은 별도 보관 브랜치와 커밋으로 추적 |
+| `index.html`, `maininfo.html` 상태 화면 | `index.html` |
+| `density.html`, `change.html`, iframe식 `graph.html` | 2개 캔버스를 가진 `graph.html` |
+| `densityinfo.php`, `changeinfo.php`, `maininfo.php`, `db_connect.php` | `api.php`에 안전한 읽기 전용 데이터 조회 통합 |
+| 선택용 Flask `app.py`, `alarm.py` 문자 기능 중복 | `alarm.py`만 유지, Flask 재구성본은 제거 |
+| `image.php` (실제는 HTML) | `image.html` |
+| Nginx/systemd/DMZ 예시와 수동 DB 마이그레이션 | 코드 복원본에서 제거; 보관 브랜치에 남김 |
 
-- Historical photos and video show local-network access to the monitoring page, camera view, recognition output, and risk display.
-- A recorded database test shows **manually inserted measurements** reflected in the web status and graphs.
-- A recorded test shows the **risk modal dialog** for a danger measurement.
-- A later-supplied 2023 phone screenshot confirms **receipt of multiple Twilio trial-account danger-alert SMS messages** matching the format in `alarm.py`. [Evidence and limitations](docs/sms-receipt-evidence-2023.md).
-- Outdoor and indoor tests identified practical recognition limits; the report notes unreliable recognition at longer distances and false positives for mannequins.
-- **Not verified:** end-to-end **camera-detected real crowd danger → SMS** (as opposed to manually induced/test danger states), the exact sending process responsible for the screenshot, end-to-end reproducibility today, quantitative model accuracy, automatic daemon/service restart.
+## 복원 근거와 범위
 
-Historical videos/reports containing people, phone numbers and account information are intentionally **not published**.
+[원본 및 보완 근거](docs/PROVENANCE.md) · [검증 결과](docs/VALIDATION.md) · [보관본 안내](docs/ARCHIVE.md)
 
-## Repository structure
-
-- [`src/python/`](src/python/) — historical Raspberry Pi scripts, with credentials externalized
-- [`src/web/`](src/web/) — historical Nginx/PHP web pages, with DB passwords externalized
-- [`database/schema_legacy_percent.sql`](database/schema_legacy_percent.sql) — supplied SQL variant; see important differences in `docs/implementation-notes.md`
-- [`docs/`](docs/) — architecture, known limitations, troubleshooting, publication notes
-- [`.env.example`](.env.example) — variable names only; not a verified deployment procedure
-
-## Configuration and limitations
-
-For safety, hardcoded database credentials, Twilio credentials, recipient numbers, and a historical camera LAN URL have been removed/replaced. **These are publication edits, not changes verified on original hardware.** Environment variables must be injected into relevant processes before attempting use. The sample `.env.example` is not loaded automatically by the scripts.
-
-The original model (`models/people_detect.tflite`), label file, and WAV audio were recovered in private backups but are **not published** here. The Flask `app.py` server source has not been recovered. `src/web/index.html` has an `RPI_IP_ADDRESS` placeholder; browser-triggered SMS is disabled in the public copy. SQL setup and camera record initialization also require environment-specific steps. Re-running this version **has not been tested**.
-
-## Sources, attribution and rights
-
-Code in the object-detection and Picamera2 streaming paths includes references/structures drawn from external examples. We preserve original comments and provide references in [`docs/attribution.md`](docs/attribution.md). No universal project-wide open-source license is granted here; third-party and teammate contributions may have independent rights. If you intend to reuse code, verify relevant source licenses and contact rights holders.
-
-## Project reflection
-
-The primary value of this repository is documenting systems integration: camera streaming, DB-backed monitoring, PHP data exchange, Linux environment setup, and device output troubleshooting, rather than presenting a production crowd-safety solution.
-
-## 2026 reconstruction from the 2023 project Q&A
-
-The [reconstructed code package](reconstructed/README.md) organizes the Raspberry Pi scripts, Nginx/PHP frontend, MariaDB schema, configuration samples, and local tests by deployment location. It is **a new, documented reconstruction**, not an exact copy of the 2023 running system.
-
-- [Reconstructed Raspberry Pi implementation](reconstructed/01_raspberry_pi_project/)
-- [Reconstructed web server implementation](reconstructed/02_nginx_webroot/)
-- [Database and migration](reconstructed/03_database/)
-- [Setup notes and example service files](reconstructed/04_configuration/)
-- [Comparison and provenance](reconstructed/05_documentation/COMPARISON_AND_PROVENANCE.md)
-- [Tests and static verification limits](reconstructed/05_documentation/TEST_REPORT.md)
-
-The earlier `src/` and `database/schema_legacy_percent.sql` are preserved as archival source. Actual 2023 backup ZIP internals, proprietary model and warning-audio assets, and original Flask API source were not fully recovered; end-to-end operation on Raspberry Pi hardware has not been established.
+**주의:** 원본 SQL의 위험 임계값(안전 ≤2, 경고 <4, 위험 ≥4)과 `people_count / total_area`는 2023년 코드 구조를 따른 임의 산식이며 실제 군중 안전 기준으로 사용해서는 안 됩니다. 모델/라벨·경고음·실제 시크릿은 저장소에 포함하지 않습니다.

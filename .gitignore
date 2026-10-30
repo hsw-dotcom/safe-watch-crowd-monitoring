@@ -1,27 +1,20 @@
-# Credentials and local configuration
+# Local files and credentials
 .env
 .env.*
 !.env.example
-*.pem
-*.key
-*.p12
-
-# Private and personal media
-*.mp4
-*.mov
-*.jpg
-*.jpeg
-*.png
-*.pdf
-*.pptx
-*.docx
-
-# Model binaries and outputs
-*.tflite
-*.wav
-models/
-tensorflow/
-image/
 __pycache__/
 *.pyc
-.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+venv/
+.DS_Store
+# Hardware-related private or generated assets
+src/python/models/*.tflite
+src/python/models/*label*.txt
+src/python/image/*.jpg
+src/python/warning.wav
+src/web/warning.wav
+src/web/tensorflow/*.jpg
+# Backup and output
+*.log
+*.zip
