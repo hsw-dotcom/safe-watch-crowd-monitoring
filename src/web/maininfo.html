@@ -181,7 +181,6 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/twilio@3.59.0/umd/twilio.min.js"></script>
 
 
  <script type="text/javascript">
@@ -206,11 +205,6 @@
       var currentTimeString = hours + ":" + minutes + ":" + seconds;
       document.getElementById("currentTime").innerHTML = currentTimeString;
     }
-
-    function playAlarmSound() {
-  var audio = new Audio('warning.wav');  // WAV 파일 경로
-  audio.play();
-}
 
     // 데이터를 가져올 PHP 파일의 URL
     var dataUrl = "maininfo.php";
@@ -256,8 +250,6 @@
     case "위험":
       {
          openModal("위험 수준이 감지되었습니다!");
-         sendSMS();
-         playAlarmSound();
       }
          return "high-risk";
     case "경고":
@@ -266,21 +258,6 @@
       return "low-risk";
   }
 }
-function sendSMS() {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", "http://127.0.0.1:5000/send_sms", true);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      if (xhr.status === 200) {
-        alert("SMS가 발송되었습니다!");
-      } else {
-        console.log("SMS 발송에 실패했습니다. 상태 코드: " + xhr.status);
-      }
-    }
-  };
-  xhr.send();
-};
-
 function openModal(message) {
   var modal = document.getElementById("myModal");
   var modalMessage = document.getElementById("modalMessage");

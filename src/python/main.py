@@ -1,4 +1,3 @@
-import csv
 import cv2
 import time
 import configparser
@@ -58,28 +57,10 @@ def write_to_db(crowd_density, danger_level):
     # 연결 종료
     conn.close()
 
-# Count_object.py의 함수를 통해 인원 감지
-def count_object():
-    objects = count_objects.detect()
-    return objects
-
-# 장애물 면적 계산
-def get_obstacle_area(obstacles):
-    total_area = 0
-
-    f = open("obstacle_area.csv", 'r')
-    obstacle_list = csv.DictReader(f)
-
-    print(obstacle_list.fieldnames)
-
-    return total_area
-
-
 # 2023 최종 시연: 위험 단계는 인원수로 판정 (면적 산출은 구현하지 않음).
-# 보고서의 장애물 면적 인자를 보존하되 실제 호출값은 0이며 동적 계산하지 않음.
-def get_alert_level(total_area, people_num, obstacle_area):
-    # 고정 설정면적 기준 수치는 기존 웹 그래프/DB용으로 계산
-    density = people_num / (total_area - obstacle_area)
+# 동적 면적 계산은 없으며 기존 고정값은 DB/그래프용으로만 사용.
+def get_alert_level(total_area, people_num):
+    density = people_num / total_area
 
     if people_num <= 2:
         return '안전', density
@@ -97,7 +78,7 @@ def main():
     for i in range(100):
         start_time = time.time()
         get_frame(ip)
-        people_num, obstacles = count_objects.detect()
+        people_num = count_objects.detect()
         print("프레임 저장 완료")
         
         # 정확한 시간 계산을 위해 실행 시간을 계산
@@ -105,7 +86,7 @@ def main():
         wait_time = delay_time - exec_time
         
         # 위험 단계 계산
-        alert_level, crowd_density = get_alert_level(total_area, people_num, 0)
+        alert_level, crowd_density = get_alert_level(total_area, people_num)
         
         # DB로 값을 저장해준다
         write_to_db(crowd_density, alert_level)

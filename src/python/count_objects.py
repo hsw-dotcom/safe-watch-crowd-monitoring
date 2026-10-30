@@ -13,14 +13,8 @@
 # I added my own method of drawing boxes and labels using OpenCV.
 
 # Import packages
-import os
-import argparse
 import cv2
 import numpy as np
-import sys
-import glob
-import importlib.util
-import matplotlib.pyplot as plt
 from tflite_runtime.interpreter import Interpreter
 
 width, height = 640, 640 # image width, height
@@ -35,19 +29,13 @@ def detect():
     base_path = 'models/'
     people_model = base_path + 'people_detect.tflite'
     people_label = base_path + 'people_label.txt'
-    obstacle_model = base_path + 'obstacle_detect.tflite'
-    obstacle_label = base_path + 'obstacle_label.txt'
 
     image = cv2.imread(image_path)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    imH, imW, _ = image.shape
     image_resized = cv2.resize(image_rgb, (width, height))
     input_data = np.expand_dims(image_resized, axis=0)
 
     people_boxes, people_classes, people_scores, people_labels = load_model(people_model, people_label, input_data)
-#    obstacle_boxes, obstacle_classes, obstacle_scores, obstacle_labels = load_model(obstacle_model, obstacle_label)
-
-    obstacle_classes = []
 
     people_num = 0
     for i in range(len(people_scores)):
@@ -57,10 +45,9 @@ def detect():
     print("감지된 인원 수 :", people_num)
 
     draw_boxes(people_boxes, people_classes, people_scores, people_labels, (0, 255, 0), image)
-    #    draw_boxes(obstacle_boxes, obstacle_classes, obstacle_scores, obstacle_labels, (255, 0, 0))
     cv2.imwrite(output_path + 'after.jpg', image)
 
-    return people_num, obstacle_classes
+    return people_num
 
 
 def load_model(model_path, label_path, input_data):
