@@ -1,55 +1,76 @@
-> **공개 저장소 정리 진행 상태:** 현재 Python 일부 및 PHP 데이터 조회 파일이 업로드되어 있습니다. 전체 소스 정리본은 별도 공개용 ZIP에 보관되어 있으며, `count_objects.py`와 HTML 화면 파일은 아직 저장소에 업로드되지 않았습니다. 이 저장소만으로는 실행할 수 없습니다.
-
 # Safe Watch — Crowd Density Monitoring (2023 Capstone)
 
-> **2023년 대학 캡스톤 프로젝트 기록 보관소.** 당시 Raspberry Pi 환경에서 구현·시연한 코드를 정리한 자료이며, 현재 전체 시스템의 실행을 보증하지 않습니다.
+> **Archive of a 2023 university capstone prototype.** This repository documents the implementation and test evidence from that time. **It is not a currently running or end-to-end reproducible application.** The original Raspberry Pi is not available. The TFLite model, label file, and WAV alarm were recovered in a separate private backup, but are intentionally excluded from this public repository; the Flask API server source remains missing.
 
-## 프로젝트
-- 기간: 2023년 3월~6월 / 4인 팀
-- 목표: 카메라 영상에서 사람 수를 탐지하고 밀집도·위험 단계를 저장·표시하는 모니터링 시제품
-- 환경: Raspberry Pi 4, Camera Module 3, Raspberry Pi OS, Python, Picamera2, OpenCV, TensorFlow Lite, Nginx, PHP, AJAX, MariaDB
-- 주요 화면: 실시간 MJPEG 카메라 영상, 사람 탐지 결과, 밀집도·위험 단계, 시계열 그래프, 위치 지도
+## Overview
 
-## 시스템 흐름
+Safe Watch attempted to monitor a camera scene, count detected people with a TensorFlow Lite model, calculate a density indicator, record results in MariaDB, and display live camera video and monitoring information through Nginx/PHP/AJAX. The 4-person team also developed risk-level alerts and tested the prototype indoors and outdoors.
+
+The project was performed in **March–June 2023** as a **4-person university capstone**.
+
+## Historical architecture
+
 ```text
-Pi Camera -> Picamera2 MJPEG server (:8000)
-               |-> Browser live-stream view
-               |-> Python frame capture -> TensorFlow Lite detection
-                      -> density and risk calculation -> MariaDB
-                            |-> PHP + AJAX + Chart.js dashboard
-                            |-> alarm.py (WAV / Twilio attempt)
+Raspberry Pi 4 + Camera Module 3
+    ├─ stream.py : Picamera2 → MJPEG HTTP stream (port 8000)
+    │      ├─ Browser iframe: live camera view
+    │      └─ main.py: capture a frame → before.jpg
+    └─ main.py → count_objects.py (TensorFlow Lite detection)
+                       └─ detected people count → configured area ratio → risk level
+                                └─ MariaDB: receive_data / cameras / density VIEW
+                                        ├─ Nginx + PHP + AJAX → dashboard and graphs
+                                        └─ alarm.py → WAV audio / Twilio SMS (code path)
 ```
 
-## 개인 담당 업무와 팀 분담
-당시 개인 최종보고서의 업무 분담 기준입니다.
+**Important:** Image analysis was periodic rather than true 1-second inference. The supplied `configs.ini` has `delay=15`; the personal report shows a historical `delay=10`. Processing time is additional to the sleep in the submitted code.
 
-| 구분 | 담당 |
+## Technologies
+
+- Hardware/OS: Raspberry Pi 4, Camera Module 3, Raspberry Pi OS/Raspbian, VNC, SSH
+- Application: Python, Picamera2, OpenCV, TensorFlow Lite, Nginx, PHP, HTML/CSS/JavaScript, AJAX, Chart.js
+- Data: MariaDB, `mysql.connector`, PHP MySQLi, SQL tables and VIEW
+- Alert: USB speaker using `aplay`, Twilio SMS integration code
+
+## Work division (from contemporaneous final report)
+
+| Workstream | Assigned role |
 |---|---|
-| 웹 서버·DB 조사 및 구축, PHP/AJAX 동적 웹페이지 | 본인 |
-| MJPEG 스트리밍 연동, 경고음·SMS 기능 구현 | 본인 |
-| AI 학습 데이터셋·모델 학습 및 모델 적용 | 다른 팀원 |
-| 밀집도 계산식 설계 | 다른 팀원 |
-| Raspberry Pi 하드웨어 구매·초기 연결 | 다른 팀원 |
+| Web server and database research/build, dynamic PHP/AJAX pages | Repository owner's documented responsibility |
+| Camera MJPEG streaming integration, alert/SMS implementation | Repository owner's documented responsibility |
+| Model training, datasets and model deployment | Other team member |
+| Density calculation rule research | Other team member |
+| Raspberry Pi hardware procurement and initial connections | Other team member |
 
-**팀 프로젝트의 공동 결과물이며, 저장소에 있는 모든 코드를 개인이 독자 작성했다는 의미는 아닙니다.**
+The submitted code is an archive of **team output**; file authorship cannot be independently established for every line. The original report documents the owner's responsibilities, not exclusive authorship of all uploaded code.
 
-## 당시 시험 기록
-카메라·인식 결과와 웹 상태 화면의 동시 표시, 로컬 네트워크 접속, VNC를 통한 Raspberry Pi 실행, 수동 DB 입력값의 웹 반영, 위험 모달 표시가 사진·영상으로 확인되었습니다. 인식 거리·마네킹 오인식 문제도 보고서에 기록되어 있습니다.
+## Evidence and verified scope
 
-**확인되지 않은 부분:** 실제 현장의 위험 상황에서 SMS 전송 성공, 전체 기능의 현재 재실행, 정량 모델 정확도 및 안정적인 1초 처리.
+- Historical photos and video show local-network access to the monitoring page, camera view, recognition output, and risk display.
+- A recorded database test shows **manually inserted measurements** reflected in the web status and graphs.
+- A recorded test shows the **risk modal dialog** for a danger measurement.
+- Outdoor and indoor tests identified practical recognition limits; the report notes unreliable recognition at longer distances and false positives for mannequins.
+- **Not verified:** field-triggered danger alert + SMS delivery, end-to-end reproducibility today, quantitative model accuracy, automatic daemon/service restart.
 
-## 공개본 보안 및 재실행 한계
-원본에 있던 DB 비밀번호·Twilio 인증정보·수신번호는 환경변수 참조로 변경합니다. 사진·영상·원본 보고서·훈련 노트북은 개인정보, 초상권 및 API 키 문제 때문에 공개하지 않습니다.
+Historical videos/reports containing people, phone numbers and account information are intentionally **not published**.
 
-원본 Raspberry Pi 장비, `people_detect.tflite` 및 라벨 파일, WAV 파일과 Flask `app.py`가 없는 상태라 재현 실행은 검증하지 않았습니다. 원본 코드의 하드웨어 의존 경로와 구현 한계는 문서에 따로 설명합니다.
+## Repository structure
 
-## 파일 안내
-- `src/python/`: Python 프로그램
-- `src/web/`: HTML/PHP 대시보드
-- `database/`: 원본 SQL의 변화율(백분율) 버전
-- `docs/`: 아키텍처·문제해결·기술적 한계·보안 및 출처
+- [`src/python/`](src/python/) — historical Raspberry Pi scripts, with credentials externalized
+- [`src/web/`](src/web/) — historical Nginx/PHP web pages, with DB passwords externalized
+- [`database/schema_legacy_percent.sql`](database/schema_legacy_percent.sql) — supplied SQL variant; see important differences in `docs/implementation-notes.md`
+- [`docs/`](docs/) — architecture, known limitations, troubleshooting, publication notes
+- [`.env.example`](.env.example) — variable names only; not a verified deployment procedure
 
-## 출처와 재사용
-TensorFlow Lite 객체 인식 예제와 Picamera2 MJPEG 스트리밍 예제를 기반으로 한 부분이 있습니다. 외부 예제 및 팀원 작성 부분의 권리 관계가 별도로 존재할 수 있으므로 프로젝트 전체에 일괄적인 오픈소스 라이선스를 부여하지 않습니다.
+## Configuration and limitations
 
-현재 저장소는 **안전사고 방지 제품이 아니라 2023년 시제품 구현 및 검증 기록**입니다.
+For safety, hardcoded database credentials, Twilio credentials, recipient numbers, and a historical camera LAN URL have been removed/replaced. **These are publication edits, not changes verified on original hardware.** Environment variables must be injected into relevant processes before attempting use. The sample `.env.example` is not loaded automatically by the scripts.
+
+The original model (`models/people_detect.tflite`), label file, and WAV audio were recovered in private backups but are **not published** here. The Flask `app.py` server source has not been recovered. `src/web/index.html` has an `RPI_IP_ADDRESS` placeholder; browser-triggered SMS is disabled in the public copy. SQL setup and camera record initialization also require environment-specific steps. Re-running this version **has not been tested**.
+
+## Sources, attribution and rights
+
+Code in the object-detection and Picamera2 streaming paths includes references/structures drawn from external examples. We preserve original comments and provide references in [`docs/attribution.md`](docs/attribution.md). No universal project-wide open-source license is granted here; third-party and teammate contributions may have independent rights. If you intend to reuse code, verify relevant source licenses and contact rights holders.
+
+## Project reflection
+
+The primary value of this repository is documenting systems integration: camera streaming, DB-backed monitoring, PHP data exchange, Linux environment setup, and device output troubleshooting, rather than presenting a production crowd-safety solution.
