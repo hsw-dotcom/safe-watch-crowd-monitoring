@@ -75,3 +75,16 @@ Code in the object-detection and Picamera2 streaming paths includes references/s
 ## Project reflection
 
 The primary value of this repository is documenting systems integration: camera streaming, DB-backed monitoring, PHP data exchange, Linux environment setup, and device output troubleshooting, rather than presenting a production crowd-safety solution.
+
+## 2026 reconstruction from the 2023 project Q&A
+
+The [reconstructed code package](reconstructed/README.md) organizes the Raspberry Pi scripts, Nginx/PHP frontend, MariaDB schema, configuration samples, and local tests by deployment location. It is **a new, documented reconstruction**, not an exact copy of the 2023 running system.
+
+- [Reconstructed Raspberry Pi implementation](reconstructed/01_raspberry_pi_project/)
+- [Reconstructed web server implementation](reconstructed/02_nginx_webroot/)
+- [Database and migration](reconstructed/03_database/)
+- [Setup notes and example service files](reconstructed/04_configuration/)
+- [Comparison and provenance](reconstructed/05_documentation/COMPARISON_AND_PROVENANCE.md)
+- [Tests and static verification limits](reconstructed/05_documentation/TEST_REPORT.md)
+
+The earlier `src/` and `database/schema_legacy_percent.sql` are preserved as archival source. Actual 2023 backup ZIP internals, proprietary model and warning-audio assets, and original Flask API source were not fully recovered; end-to-end operation on Raspberry Pi hardware has not been established.

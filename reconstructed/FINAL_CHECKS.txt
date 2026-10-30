@@ -1,0 +1,18 @@
+Safe Watch 대화·원본 기반 재구성본 검증 결과 (2026-10-31)
+
+[PASS] Python 소스 compile (Python 3.13 on packaging container)
+[PASS] unittest 5 tests (risk boundary, density, config, alarm transition)
+[PASS] 웹 HTML 로컬 참조/필수 파일 구조 검사 (warning.wav는 미확보 원본으로 제외)
+[PASS] PHP 소스 5개 php -l (PHP CLI on packaging container)
+[PASS] JS 소스 2개 node --check (Node 22)
+[PASS] main.py --dry-run 1회 연산, 종료코드 0 (카메라·모델·DB 접근 없음)
+[NOT TESTED] Raspberry Pi Camera/Picamera2, TFLite model/labels compatibility
+[NOT TESTED] Real MariaDB migration and PHP-to-DB network
+[NOT TESTED] End-to-end Nginx/PHP/MJPEG display on Raspberry Pi
+[NOT TESTED] Real Twilio SMS, WAV speaker, ipTIME DMZ/public exposure
+
+앞선 프로젝트 백업 ZIP들은 Library 목록에서 파일 존재/크기만 확인;
+작업 컨테이너로 실제 바이트를 복사할 수 없으므로 내부 파일 단위 대조는 수행하지 못했습니다.
+
+결과물의 01~04 파일은 원본 코드와 당시 Q&A를 이용해 새로 재구성했습니다.
+정확한 원본 파일이 아니며 하드웨어 실행·안전 효과를 보증하지 않습니다.

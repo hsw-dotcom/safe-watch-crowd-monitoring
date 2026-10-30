@@ -1,0 +1,12 @@
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;color:#e8edf4;background:#111827}
+*{box-sizing:border-box}body{margin:0}header{background:#1f2937;border-bottom:1px solid #374151;padding:18px 20px;text-align:center}
+header h1{font-size:26px;margin:0}header p{margin:6px 0 0;color:#bac7d7}main{max-width:1280px;margin:0 auto;padding:18px}
+.cameras{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel,.metric{background:#1b2638;border:1px solid #334155;border-radius:9px;overflow:hidden}
+.panel h2{font-size:16px;margin:0;padding:12px}.camera-frame{display:block;border:0;background:#0b1220;width:100%;aspect-ratio:16/10;min-height:240px}
+.status{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.metric{padding:16px;text-align:center}.metric small{display:block;color:#bac7d7;margin-bottom:6px}.metric b{font-size:20px}
+.status.safe .risk{background:#175b34}.status.warning .risk{background:#805a0e}.status.danger .risk{background:#852b34}
+.menu{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin:12px 0}.menu a,button{font-size:15px;cursor:pointer;border:1px solid #52617a;background:#334155;color:#fff;padding:12px 18px;border-radius:6px;text-decoration:none}
+.menu a:hover,button:hover{background:#475569}.details{color:#cbd5e1;font-size:14px;text-align:center}#error{color:#fecaca}
+.notice{margin:14px 0;padding:12px;border-radius:6px;border:1px solid #9f5c50;background:#512c2c}.hidden{display:none}
+.chartbox{height:340px;background:white;color:#111;padding:15px;border-radius:8px}
+@media(max-width:780px){.cameras{grid-template-columns:1fr}.status{grid-template-columns:repeat(2,1fr)}.camera-frame{min-height:200px}main{padding:10px}}

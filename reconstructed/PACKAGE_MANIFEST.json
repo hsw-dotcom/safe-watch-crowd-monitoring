@@ -1,0 +1,276 @@
+{
+  "title": "SafeWatch_2023_Final_Reconstructed",
+  "status": "reconstructed from archived source and historical Q&A; previous ZIP internals unavailable",
+  "files": [
+    {
+      "path": "01_raspberry_pi_project/alarm.py",
+      "bytes": 3307,
+      "sha256": "9c37e08f4b5bc33427e32b86f0b418b2438c332959c9d781005fe22fe7f3c503",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/app.py",
+      "bytes": 1372,
+      "sha256": "44be6c0fa88668c04382215e62d9de61adf5c4f18ad4476e34581a5f20e10155",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/configs.ini",
+      "bytes": 368,
+      "sha256": "f2d36d9d2f57d9b1f3e7ad396d1983b5c970cc4cc926a8214a7f77abcb0c343e",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/count_objects.py",
+      "bytes": 4434,
+      "sha256": "01badab3c770dfd1b24b0389619b202c3a85618d4b90a1afdcf3be53f6af597d",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/db.py",
+      "bytes": 1709,
+      "sha256": "9275d5b8513b6b420a1a1fea7c26bc8e1b8c45ddcb34ac379e157c45a91b2010",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/image/README.md",
+      "bytes": 75,
+      "sha256": "0a0be592048248d8a994430eecea3b054e2513dcf3e06eac5b9fd22f05bde74b",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/main.py",
+      "bytes": 3074,
+      "sha256": "28a30d219424305a67a66fa5a3a7c1648182e324a376502143a1f13a304a0380",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/models/README.md",
+      "bytes": 224,
+      "sha256": "136ea5181d1594ad68b9e2875485cb4c1727d39f8bfbfcca080118a830220491",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/requirements-pip.txt",
+      "bytes": 344,
+      "sha256": "5709bc51677f029f2bc5a903a11d4c7091c8521a8912626530d1274280a3227c",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/risk.py",
+      "bytes": 834,
+      "sha256": "9cef55a831c218996ae441791725dc2fd76dd4c9087709aaa05d97eec1ebe7e2",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/settings.py",
+      "bytes": 1628,
+      "sha256": "b2937e08d81fe334863c43db3e72615d3662d3e8e5e5fef26690238f627a7cc4",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "01_raspberry_pi_project/stream.py",
+      "bytes": 2765,
+      "sha256": "94357fe3206bd2b1bb846beba5c06767f71a08e5faa4ee354934f93ad524d7c3",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/assets/chart.js",
+      "bytes": 1399,
+      "sha256": "4d092b70b3b2ed79eeea58f9af0cedfa9dde91c957d47cb346bd040f994d63ed",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/assets/dashboard.js",
+      "bytes": 2118,
+      "sha256": "2dc6f0fac98d4dfe492fae9661bbda371261c9447eb0e1c0aa55338416f3fefa",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/assets/style.css",
+      "bytes": 1725,
+      "sha256": "cec2cb168d11c08960c3e6e43b5bf898fdb3d34d5b8552be2ebc9a217bc31fa0",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/change.html",
+      "bytes": 572,
+      "sha256": "5811aafd951daea190d3201dfb0bd4524ca1cc459cb96fa0472a163477a19af6",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/changeinfo.php",
+      "bytes": 947,
+      "sha256": "d1956f1124ddad06d507755ade50f9a2067dfdbbb3577fa68299e1d7f45b99f6",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/db_connect.php",
+      "bytes": 1400,
+      "sha256": "30a4633dca46fc232db0c92c4fcfd9df1cf587f0d1595ba60ad09b7feb9554f0",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/density.html",
+      "bytes": 559,
+      "sha256": "11389b305d126c205922bc8785afb36b97b46788eb17282d3a01c69e6e04dd76",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/densityinfo.php",
+      "bytes": 666,
+      "sha256": "956ae007ec79c21516b0036ba401617ccd463b52d7201c1bcfd913585a2e1c7f",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/graph.html",
+      "bytes": 665,
+      "sha256": "69072aaf3f97965c213dd8c918f7edf17e6c971ed03ea12fe474eef9e6b65d33",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/image.php",
+      "bytes": 593,
+      "sha256": "cebf883783ae9ab3f267e97d3bdb1796dfd0893aec87921dabe13e7cd2d8d0fe",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/index.html",
+      "bytes": 1837,
+      "sha256": "5a37dc81d4557cc9d1fac7fccd46e9ff6a097e9c4e920a7cea208b8bb6a7f0e0",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/maininfo.html",
+      "bytes": 1034,
+      "sha256": "e3cc97ef1f476bb428b6ba54bfad1b3ac8789c32a7fd905f60194e6a002b7cd7",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/maininfo.php",
+      "bytes": 988,
+      "sha256": "2e1f508fb8b25a0b3f431637c40bae882892890394bd66d6987ec5c365a5140d",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/map.html",
+      "bytes": 916,
+      "sha256": "fefccd2622b0e477246615bd861194458587b5806b4055342291c91b1e72b917",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "02_nginx_webroot/tensorflow/README.md",
+      "bytes": 81,
+      "sha256": "84b9b5f79431ee6cf386170b1e518785b5eafb8e6ababe7349bfad2a0bd52600",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "03_database/legacy_sql_original_extracted.txt",
+      "bytes": 1155,
+      "sha256": "977ac87d501c3eb4c5725c543d2fd830b783db8d079d2e65fc4e5b4879fd889f",
+      "category": "original-content-excerpt"
+    },
+    {
+      "path": "03_database/migration_from_legacy.sql",
+      "bytes": 1065,
+      "sha256": "c59916e70163de514574e10133e1f769592e792bb2b9188258ccf89b9f358ded",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "03_database/schema.sql",
+      "bytes": 2065,
+      "sha256": "f06b42657eadc28567f956b0efd1eae70d1d4e8d96c04e5a01bb92d655331d1e",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "04_configuration/.env.example",
+      "bytes": 835,
+      "sha256": "9247f6ed50a4e9acbb6ec063ba8ebd48efd3d3552a0f184e76b48fd17f2748e3",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "04_configuration/nginx-example.conf",
+      "bytes": 509,
+      "sha256": "fe08f72f3f7b4756ab0b63b653d55513e9b8eb9d3702a6c935d4d5d2a72d99c1",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "04_configuration/systemd/safewatch-alarm.service",
+      "bytes": 374,
+      "sha256": "d18e88fd9bc3123f7057f3cec4609818613b9fd3e406e2b6e10e23915a3de234",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "04_configuration/systemd/safewatch-main.service",
+      "bytes": 415,
+      "sha256": "cb92073f4729add51fa69cdfa7b42569212a8ad867c03cb898c71fa2894ae8d9",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "04_configuration/systemd/safewatch-stream.service",
+      "bytes": 382,
+      "sha256": "904a63a1dc66f1e5d6771308e5c1ee1ef7dca67c99e89e3bcd4419b249b86fca",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "05_documentation/COMPARISON_AND_PROVENANCE.md",
+      "bytes": 4893,
+      "sha256": "be8acb86f9556f9f6a6b58f3c0d4b0e8e2c7123c5210f1cdf44a9f82c7d2e13a",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "05_documentation/INSTALL_AND_OPERATION.md",
+      "bytes": 4377,
+      "sha256": "e7eb925915aba30c156646cc5b2f8db73ab6d463ee63095a27f713676f08024e",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "05_documentation/TEST_REPORT.md",
+      "bytes": 580,
+      "sha256": "03c97678a4d586122c5a8577d8828dc5f05d76249f6886bdd70ef83c6efa714e",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "06_tests/test_risk.py",
+      "bytes": 1738,
+      "sha256": "3665dc29dc2bfa537e72fe9d310adf6168f3cc9e2367d6cccbbed61c9717be9f",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "06_tests/verify_structure.py",
+      "bytes": 1082,
+      "sha256": "c839961cb4aac8e84566d8bf55d67d64ed3272e92df16e3f1152dc26350a96e3",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "07_original_reference/QA_2023_HTML_IMAGE_REFRESH_EXCERPT.md",
+      "bytes": 948,
+      "sha256": "1a3e9ca0b6865b45fd6fe16bc9bb16b6a183fae9b938ae51e71d6bcd1c5f2c5d",
+      "category": "provenance"
+    },
+    {
+      "path": "07_original_reference/README.md",
+      "bytes": 920,
+      "sha256": "6fad48897c3792bd1d858098557067e18a51385b17c7ed7f45d0d2112bbefcda",
+      "category": "provenance"
+    },
+    {
+      "path": "07_original_reference/SOURCE_FILE_BLOB_SHAS.json",
+      "bytes": 1678,
+      "sha256": "64219f814f3964f7f795d97317fbcd821d219a11c19626c3784ead2cfe529a78",
+      "category": "provenance"
+    },
+    {
+      "path": "FINAL_CHECKS.txt",
+      "bytes": 1214,
+      "sha256": "91d6c9a1bf1d38a69472657b6f4c3896219c013fb5130562c206ab961539d7cb",
+      "category": "reconstructed-or-new"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3627,
+      "sha256": "c64830164f402436dd0bed872b1467f6fd427d86b6b896bbcde5ec59b928b1bf",
+      "category": "reconstructed-or-new"
+    }
+  ]
+}

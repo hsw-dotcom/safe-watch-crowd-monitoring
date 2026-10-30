@@ -1,0 +1,14 @@
+# [NEW] historical boot automation is known, but original service config is missing.
+[Unit]
+Description=Safe Watch MJPEG stream
+After=network.target
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/project
+EnvironmentFile=-/etc/safewatch/safewatch.env
+ExecStart=/usr/bin/python3 /home/pi/project/stream.py
+Restart=on-failure
+RestartSec=5
+[Install]
+WantedBy=multi-user.target

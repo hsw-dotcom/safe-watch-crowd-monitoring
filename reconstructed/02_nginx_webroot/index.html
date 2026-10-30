@@ -1,0 +1,20 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Safe Watch - 군중 밀집도 모니터링</title><link rel="stylesheet" href="assets/style.css"></head>
+<body><header><h1>Safe Watch</h1><p>AI 기반 군중 밀집도 감지 모니터링 · 2023 캡스톤 재구성본</p></header>
+<main><div class="cameras">
+  <section class="panel"><h2>실시간 카메라 영상</h2><iframe class="camera-frame" id="live-camera" src="http://RPI_IP_ADDRESS:8000/index.html" title="실시간 카메라"></iframe></section>
+  <section class="panel"><h2>인원 인식 결과</h2><iframe class="camera-frame" src="image.php" title="인원 인식 이미지"></iframe></section>
+</div>
+<div id="status" class="status">
+  <div class="metric"><small>구역</small><b>명지대학교 골목 1</b></div>
+  <div class="metric"><small>현재 시각</small><b id="time">—</b></div>
+  <div class="metric"><small>인식 인원 / 밀집도</small><b><span id="people">—</span>명 / <span id="density">—</span></b></div>
+  <div class="metric risk"><small>위험 수준</small><b id="level">—</b></div>
+</div>
+<p class="details">최근 측정: <span id="measured">—</span> · 카메라 1 · 위험 판단은 설정된 구역·기준값에 종속</p>
+<p class="details" id="error" aria-live="polite"></p>
+<div id="danger-notice" class="notice hidden" role="alert">위험 수준이 감지되었습니다. 실제 상황은 현장 확인이 필요합니다.</div>
+<div class="menu"><a href="graph.html">밀집도 그래프</a><a href="map.html">CCTV 위치</a>
+  <button id="enable-audio" type="button">브라우저 경고음 켜기</button></div>
+<audio id="alarm-audio" preload="none" src="warning.wav"></audio>
+</main><script src="assets/dashboard.js"></script></body></html>
