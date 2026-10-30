@@ -35,3 +35,9 @@
 - 최종 발표에 맞추려 수정했던 **후대 재구성본**: [archive/reconstruction-before-original-only-20261031](https://github.com/hsw-dotcom/safe-watch-crowd-monitoring/tree/archive/reconstruction-before-original-only-20261031)
 
 추가 제출된 `backup.zip`에서는 모델·라벨·경고 WAV 존재를 확인했습니다. 다만 당시 실제 최종 배포본 전체를 빠짐없이 복원했다는 뜻은 아닙니다. Git blob의 일치는 기존 **공개용 보안 처리 사본** 기준입니다.
+
+## E. 대화·2023년 개인 최종보고서 교차 확인
+
+추가 대조 결과, 2023년 개인 최종보고서에는 **원본 소스와 다른 시점/버전의 코드**가 들어 있습니다. 구체적으로 `delay=10`(보관본 15), `get_alert_level(..., obstacle_area)`(호출할 때 0 전달), `density` SQL의 절대 차이 방식(보관본은 이전값 대비 %)을 확인했습니다. 이 차이는 원본을 수정할 근거가 아니므로 [검토 기록](2023_CONVERSATIONS_AND_REPORT_AUDIT.md)에만 남겼습니다.
+
+최종보고서는 개인적으로 경고음이 계획한 방식으로 구현됐다고 서술하되, 야외 시험은 경고/위험 수준에 도달하지 않아 **실제 위험 감지 → SMS/경고음 전체 자동 연동은 시험하지 못했다**고 구분합니다. 당시 증거를 넘어 성능·완성도를 단정하지 않습니다.
