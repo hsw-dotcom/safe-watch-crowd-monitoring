@@ -1,54 +1,41 @@
-# 보관 소스 상태·별도 확보 자료·보존 브랜치 (2026년 작성)
+# Safe Watch — 현행 구현 파일, 원본과의 차이, 실행 검증 범위
 
-## A. 유지한 것: 기존 공개용 Git 보관본과 blob SHA가 일치하는 2023 기반 소스
+> 작성·갱신: 2026-10-31. **최종 구현의 완전한 2023년 소스 복사본이 아니라, 보존 소스 + 2023 보고서 및 직접 확인 결과에 근거한 최소 수정본**.
 
-- Python 5개: `main.py`, `count_objects.py`, `stream.py`, `alarm.py`, `configs.ini`.
-- HTML/PHP 10개: `index.html`, `image.php`, `maininfo.html`, `maininfo.php`, `graph.html`, `density.html`, `densityinfo.php`, `change.html`, `changeinfo.php`, `map.html`.
-- SQL 1개: `schema_legacy_percent.sql`.
+## 현행 파일 상태
 
-2026년 신규 실행 로직은 main에서 제외했습니다. 루트 README 및 docs는 **설명용 비실행 문서**입니다. 공개 준비 당시 암호·전화번호 등 인증정보를 치환한 소스이므로 비공개 2023 ZIP과 완전 동일하다는 뜻은 아닙니다.
+- Python 5개(`main.py`, `configs.ini`, `count_objects.py`, `stream.py`, `alarm.py`), 웹 HTML/PHP 10개, SQL 1개: 총 **코드·설정 16개**.
+- `main.py`는 2026년에 **인원 수 직접 단계 판정** 및 **개인 보고서의 장애물면적 인자 구조(실제 0)**를 반영한 수정본. 원래 보고서와 코드 줄 전체가 같지 않음.
+- `configs.ini`는 보고서의 **10초**로 갱신. 이전 보관본은 15초. 다른 소스 14개는 기존 SHA 그대로.
+- 백분율 변화율 SQL은 앞서 확인한 최종 사용 방식에 맞춰 유지. 보고서에 수록된 절대차 SQL과는 다름.
+- 문서·출처 목록은 2026년 작성. Git 원본과 동일한 바이트라는 보장을 부여하지 않음.
 
-## B. 원본만으로 가능한 것과 불가능한 것
+## 확인된 주요 동작
 
-**가능**: 프로젝트의 주요 함수·파일 구조, 영상 → 사람 검출 → 위험 결과 저장 → 웹 조회 → 경고 요청 흐름을 확인하고 분석할 수 있음. 원본 PHP/HTML 웹 화면과 그래프 구성 확인 가능.
+Raspberry Pi/Camera Module v3 → Picamera2 MJPEG → JPG 캡처 → TFLite 사람 수 검출 → **인원 수 직접 위험 단계** → MariaDB → Nginx/PHP/Chart.js/Google 지도 → Python `alarm.py`의 10초 위험 상태 조회/Twilio SMS/WAV 경고 경로. JPG는 직접 덮어쓰기, 웹은 2초마다 새 JPG 요청.
 
-**별도 확인된 사실**: 사적 백업에서 모델·라벨·경고음 파일을 확보했고, 휴대전화 사진에서 Twilio 위험 문자 **실제 수신**이 확인됩니다. [상세 증거](ARTIFACT_AND_SMS_EVIDENCE.md).
+**실측 면적 산출, 장애물 면적 차감, 장애물 모델 최종 탑재, IoU 중복 보정은 구현했다고 주장하지 않음.** `total_area=300`은 이전 설계에서 사용한 설정값이고 화면/DB의 수치는 실측 면적 기반 군중 밀도와 다름.
 
-**불가능하거나 미확인**: 현재 공개 저장소에 모델·라벨·음원은 없고, 실물 장치·이전 실행환경도 없어 현재 재현할 수 없음. 모델 정확도 및 **실제 카메라 위험 감지 → SMS 자동 발송** 전 과정은 확인되지 않음.
+## 현재 실행하기 전에 필요한 외부 조건
 
-## C. 보관 원본에서 확인된 불완전 지점
+- `models/people_detect.tflite`, `models/people_label.txt`, `warning.wav` 원본은 별도 비공개 백업에서 확인. 공개 Git에서는 제외.
+- Raspberry Pi 하드웨어, Picamera2, TFLite, MySQL 드라이버 및 MariaDB 서버, PHP/Nginx 환경과 실행 경로가 필요.
+- 비밀정보는 환경변수로 읽도록 기존 공개용 코드에서 치환된 상태. 개별 설정값 및 실사용 자격 증명은 포함하지 않음.
+- 현재 SQL 파일 맨 위의 `sudo mysql -u root -p`는 SQL 실행문이 아니라 셸 명령. DB 생성·선행 `cameras` 행 등은 외부 준비가 필요.
+- `maininfo.html`에는 2023 개발 중 실험한 브라우저 `/send_sms` 경로가 남아 있으나, 실제 최종 문자 발송 경로는 `alarm.py`로 확인됨. Flask `app.py` 원본 및 브라우저 경로의 성공 기록은 미확보.
+- 원본 `density` VIEW는 이전 0 값에 대한 명시적인 분모 처리 없음. 새 설계의 안전 보강을 원본 기능이라고 설명하지 않음.
 
-1. `count_objects.py`는 `models/people_detect.tflite`와 `models/people_label.txt`를 외부 파일로 요구. 파일 본체는 현재 `main`에 없음.
-2. `alarm.py`는 `warning.wav` 및 Twilio 환경변수와 장치가 있어야 경고를 실행. WAV 원본은 **비공개 백업에서 확보**했으나 이 공개 저장소에는 포함하지 않음.
-3. `maininfo.html`은 `http://127.0.0.1:5000/send_sms`에 브라우저에서 요청하지만 당시 Flask `app.py` 보관본은 없음. 이는 브라우저가 실행되는 PC/폰의 localhost를 가리킬 수 있으므로 분리된 `alarm.py`의 SMS 기능과 혼동하면 안 됨.
-4. SQL 파일 첫 줄 `sudo mysql -u root -p`는 SQL이 아닌 셸 명령. DB 선택/생성과 `cameras` 기본 행의 사전 준비가 누락되어 빈 DB에 그대로 복사 실행할 경우 오류가 발생할 수 있음.
-5. SQL VIEW는 이전 밀집도 0에서 나눗셈 예외에 대한 명시적 방어가 없음. 이를 뒤늦게 추가하지 않고 원본 상태로 둠.
-6. 최종 발표와 사용자는 **인원 수 기준 위험 판정이 최종 구현**이었다고 확인했지만, 현재 보관된 `main.py`는 밀집도 기준. 보관 코드의 다른 버전이므로 원문을 그대로 유지. [비교 문서](PRESENTATION_VS_SOURCE.md) 참고.
-7. 미완성 장애물 면적 처리·IoU 예정 사항은 기능 완료로 간주하지 않음.
+## 실제 검증의 한계
 
-## D. 2026년 재작성·보완 코드는 현재 main에서 제거
+- 개인 최종보고서 31–33쪽: 높은 위험 단계의 야외 종단 간 시험 성공 기록 없음, 원거리 인식률 저하 및 마네킹 오인식 문제 명시.
+- 별도 휴대전화 사진: Twilio 위험 문자의 실제 수신은 확인되나 자동 카메라 위험 감지의 결과인지 미확인.
+- 코드를 갱신한 현재 환경에서 Raspberry Pi·카메라·SMS·DB를 직접 재실행하지 않았음. 코드 구문과 위험 분기만 검증할 수 있음.
 
-다음 항목은 **보관 원본이 아니어서** 삭제했습니다: `src/python/{db.py,risk.py,settings.py}`, 새 PHP `api.php`, 그래프/대시보드 JS·CSS 통합본, 합성 demo JSON 및 --dry-run, 새로운 schema.sql, 새 테스트, 경고 cooldown, 새 모델 캐싱, 원자적 이미지 저장, 자동 실행/서버 설정 예시. 원본에 있는 동일 역할 파일만 유지했습니다.
+## 변경 이력 참조
 
-복구 가능한 보관 위치:
-- 원본과 초기 재작성 혼재: [archive/pre-dedup-20261031](https://github.com/hsw-dotcom/safe-watch-crowd-monitoring/tree/archive/pre-dedup-20261031)
-- 최종 발표에 맞추려 수정했던 **후대 재구성본**: [archive/reconstruction-before-original-only-20261031](https://github.com/hsw-dotcom/safe-watch-crowd-monitoring/tree/archive/reconstruction-before-original-only-20261031)
+- [코드 SHA 및 2023 원본/2026 수정 경계](ORIGINAL_SOURCE_MANIFEST.md)
+- [최종 발표와 제출 보고서의 충돌](PRESENTATION_VS_SOURCE.md)
+- [프로젝트 대화 확인 내용](2023_CONVERSATIONS_AND_REPORT_AUDIT.md)
+- [SMS 자산 확인](ARTIFACT_AND_SMS_EVIDENCE.md)
 
-추가 제출된 `backup.zip`에서는 모델·라벨·경고 WAV 존재를 확인했습니다. 다만 당시 실제 최종 배포본 전체를 빠짐없이 복원했다는 뜻은 아닙니다. Git blob의 일치는 기존 **공개용 보안 처리 사본** 기준입니다.
-
-## E. 대화·2023년 개인 최종보고서 교차 확인
-
-추가 대조 결과, 2023년 개인 최종보고서에는 **현재 보관 소스와 다른 시점/버전의 코드**가 있습니다. 구체적으로 `delay=10`(보관본 15), `get_alert_level(..., obstacle_area)`(호출할 때 0 전달), `density` SQL의 절대 차이 방식(보관본은 이전값 대비 %)을 확인했습니다. **2026-10-31 사용자 확인으로 최종 인식·DB 기록은 10초, 최종 그래프는 백분율(%)이었음을 확인**했으므로 보고서의 차이 SQL을 최종 사용본으로 간주하지 않습니다. 이 차이는 원본을 수정할 근거가 아니므로 [검토 기록](2023_CONVERSATIONS_AND_REPORT_AUDIT.md)에만 남겼습니다.
-
-최종보고서는 개인적으로 경고음이 계획한 방식으로 구현됐다고 서술하되, 야외 시험은 경고/위험 수준에 도달하지 않아 **실제 위험 감지 → SMS/경고음 전체 자동 연동은 시험하지 못했다**고 구분합니다. 당시 증거를 넘어 성능·완성도를 단정하지 않습니다.
-
-## F. 2026-10-31 당사자가 확정한 최종 구현 동작
-
-| 기능 | 최종 구현 확인 | 현재 공개용 보관 소스와 비교 |
-| --- | --- | --- |
-| 위험 수준 | 인원 수 기준 1~2 안전 / 3~4 경고 / 5명 이상 위험 | `main.py`의 밀집도 기준 분류와 불일치, 최종판 코드 원문 미확보 |
-| 그래프 변화율 | 백분율(%) | 보관 SQL의 퍼센트 계산과 일치, 최종보고서의 차이 계산과 불일치 |
-| 문자 | `alarm.py`에서 발송 | 보관 Python과 일치, HTML의 `/send_sms`는 최종 동선으로 보지 않음 |
-| 사람 인식·DB 저장 | 10초 주기 | 최종보고서 `delay=10`과 일치, 현재 보관 설정의 `delay=15`와 불일치 |
-
-이 항목들은 **당시 최종 기능에 관한 사용자 확인 사항**이며 누락된 최종 Python/SQL 파일을 추정해 복원한 것은 아닙니다. 기존 보관 코드는 그대로 둡니다.
+이전 보관 버전은 Git 커밋 및 별도 archive 브랜치에서 추적 가능합니다. **최종 사용 코드 원문을 확인했다고 오인할 수 있는 표현은 피해야 합니다**.

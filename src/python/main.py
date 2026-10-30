@@ -75,14 +75,15 @@ def get_obstacle_area(obstacles):
     return total_area
 
 
-# 전체 면적과 사람 수를 불러와 위험 단계를 계산
-def get_alert_level(total_area, people_num):
-    # 사람 평균 면적은 고정
-    density = people_num / total_area
+# 2023 최종 시연: 위험 단계는 인원수로 판정 (면적 산출은 구현하지 않음).
+# 보고서의 장애물 면적 인자를 보존하되 실제 호출값은 0이며 동적 계산하지 않음.
+def get_alert_level(total_area, people_num, obstacle_area):
+    # 고정 설정면적 기준 수치는 기존 웹 그래프/DB용으로 계산
+    density = people_num / (total_area - obstacle_area)
 
-    if density <= 2:
+    if people_num <= 2:
         return '안전', density
-    elif (density > 2) and (density < 4):
+    elif (people_num > 2) and (people_num < 5):
         return '경고', density
     else:
         return '위험', density
@@ -104,7 +105,7 @@ def main():
         wait_time = delay_time - exec_time
         
         # 위험 단계 계산
-        alert_level, crowd_density = get_alert_level(total_area, people_num)
+        alert_level, crowd_density = get_alert_level(total_area, people_num, 0)
         
         # DB로 값을 저장해준다
         write_to_db(crowd_density, alert_level)
