@@ -28,6 +28,15 @@ flowchart TD
 
 그림은 보존된 코드들의 **연결 의도와 구현 경로**를 설명합니다. 실제 SMS 수신은 별도 사진으로 확인됐으나, 실시간 카메라 위험값이 그 SMS를 발생시켰는지는 미확인입니다.
 
+
+## 2023년 Safe Watch 실제 웹 화면
+
+![2023년 Safe Watch 웹 대시보드 — 브라우저의 내부망 주소를 제외한 화면](assets/2023_original_dashboard_capture.jpg)
+
+위 이미지는 **Safe Watch 웹 모니터링의 2023년 캡처본**으로, 당시 대시보드에 사람 인식 화면과 위험 경고 모달 등이 배치됐다는 증거입니다. 다만 이 화면의 위험값은 별도의 DB 시험·시연과 구분하여 해석하며, 실제 군중 밀집 상황에서 자동으로 모든 기능이 작동했다는 증명은 아닙니다.
+
+**증거 분류 정정:** 이전에 이 저장소에 올렸던 두 `after.jpg` 검출 화면은 Safe Watch의 인식 코드를 **라인트레이서에 추출·적용하던 개발 과정**의 스크린샷입니다. 해당 자료는 [라인트레이서 저장소의 재사용 시험 기록](https://github.com/hsw-dotcom/human-aware-line-follower/blob/main/docs/DETECTOR_REUSE_EVIDENCE.md)으로 이동했습니다. Safe Watch의 직접 시연 증거로 사용하지 않습니다.
+
 ## 실제 원본 코드 배치
 
 ```text
