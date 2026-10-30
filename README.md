@@ -79,3 +79,7 @@ docs/
 위 보관 브랜치 2개는 2026년 10월 31일 기존 커밋으로 복구했습니다. 과거 재구성 코드는 해당 브랜치에서 확인 가능하며 `main`에 혼입하지 않습니다.
 
 > 출처 제한: 확인된 16개 소스가 2023년 최종 배포 파일 전체인지는 확정되지 않았습니다. **blob SHA 일치는 기존 Git 보관본과의 일치**만 보여줍니다. [원본/보안 사본 구분](docs/ARTIFACT_AND_SMS_EVIDENCE.md) 및 [발표·코드 차이](docs/PRESENTATION_VS_SOURCE.md)를 함께 확인하세요.
+
+## 실행하지 않는 자동 검사
+
+[GitHub Actions — Source syntax checks](https://github.com/hsw-dotcom/safe-watch-crowd-monitoring/actions/workflows/offline-checks.yml)는 Python 구문 컴파일과 PHP CLI가 있을 때의 PHP 문법 검사를 수행합니다. **카메라·DB·TFLite·경고음·SMS의 실제 작동을 검증하지 않습니다.**
