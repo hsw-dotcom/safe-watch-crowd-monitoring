@@ -17,7 +17,7 @@
 | Density threshold | `<=2` safe, `2<x<4` warning, `>=4` danger | Presentation describes a different 1–5 scale | Use code values only when describing this specific source version |
 | Density computation | `people_num / total_area` | Planned adjustment for obstacles | Obstacle adjustment not present in submitted execution path |
 | Change metric | SQL upload uses percentage relative to prior value | Report final SQL uses absolute difference | Uploaded SQL is a historic variant, not proven deployed schema |
-| Alert delivery | Twilio and WAV call paths present | Report states field test never reached danger | No confirmation of field-triggered SMS delivery |
+| Alert delivery | Twilio and WAV call paths present | Field test never reached danger; later screenshot shows received Twilio trial SMS with danger wording | **SMS receipt verified**; camera-triggered end-to-end delivery and exact sending process remain unverified |
 
 ## Known technical gaps
 
@@ -34,6 +34,6 @@
 
 **Code implemented:** Python/PHP source, DB/VIEW, MJPEG serving, audio/SMS call paths.
 
-**Documented and witnessed in historic materials:** Nginx/MariaDB setup screens; desktop and VNC screens; periodic recognition display; status/graph updates on manually injected DB values; risk modal output.
+**Documented and witnessed in historic materials:** Nginx/MariaDB setup screens; desktop and VNC screens; periodic recognition display; status/graph updates on manually injected DB values; risk modal output; **multiple received danger-alert SMS via Twilio trial account**, confirmed by a later-supplied phone screenshot ([details](sms-receipt-evidence-2023.md)).
 
-**Not independently verified:** currently runnable build, live field danger-to-SMS/warning chain, real-world camera density accuracy, actual model identity from source alone, original contributor-level authorship for each file.
+**Not independently verified:** currently runnable build, live field camera danger-to-SMS/warning chain (the SMS receipt screenshot does not establish what triggered it), USB speaker output in that event, real-world camera density accuracy, actual model identity from source alone, original contributor-level authorship for each file.
