@@ -1,6 +1,6 @@
-# 원본 코드 진위 및 SHA 목록
+# 공개용 보관 소스 Git blob SHA 목록
 
-이 문서는 **2026년에 새로 작성한 검증 기록**입니다. 아래 소스는 `archive/pre-dedup-20261031`에서 확인한 Git blob SHA를 변형 없이 현재 `main`으로 복사한 것입니다. GitHub에서 파일 변경이 발생하면 원본 인증 대상으로 취급하지 마십시오.
+이 문서는 **2026년에 새로 작성한 검증 기록**입니다. 아래 16개 파일은 `archive/pre-dedup-20261031`의 **기존 공개용 Git 소스**와 현재 `main`의 Git blob SHA가 동일합니다. **이는 2023년 비공개 원본 ZIP과 바이트 단위로 동일하다는 증명이 아닙니다.** 앞선 공개용 정리 과정에서 비밀번호·인증정보를 환경변수로 치환한 파일이 포함됩니다. 파일을 다시 수정할 경우 아래 SHA 목록은 갱신해야 합니다.
 
 | 보관 원본 상대경로 | SHA-1 Git blob | 원본에서 확인된 역할 |
 | --- | --- | --- |
@@ -21,8 +21,8 @@
 | `src/web/map.html` | `3f748239b44fb7b405bc9d2676fafe1935e0f7b0` | CCTV 위치 Google 지도 |
 | `database/schema_legacy_percent.sql` | `7a19a773482487a1104d001ac7d58a742699b5b9` | cameras, receive_data 및 density VIEW 정의 |
 
-**총 16개 원본 코드·설정 파일.** README와 docs는 2026년 설명 문서이며 당시 소스가 아닙니다. 누락된 TFLite 모델·라벨·음원 파일을 임의로 생성하거나 원본이라 주장하지 않았습니다.
+**총 16개 2023 기반 공개용 보관 코드·설정 파일.** README와 docs는 2026년 설명 문서이며 당시 소스가 아닙니다. 누락된 TFLite 모델·라벨·음원 파일을 임의로 생성하거나 원본이라 주장하지 않았습니다.
 
-원본 확보 경로: [2026년 통합 정리 전 보존 브랜치](https://github.com/hsw-dotcom/safe-watch-crowd-monitoring/tree/archive/pre-dedup-20261031).
+Git 기록의 비교 대상: [2026년 통합 정리 전 보존 브랜치](https://github.com/hsw-dotcom/safe-watch-crowd-monitoring/tree/archive/pre-dedup-20261031).
 
 한계: 사용자가 이전 대화에서 올린 ZIP 전체의 바이너리 내용까지 1:1로 대조한 것은 아닙니다. 따라서 2023년 당시 모든 배포 파일을 완전 복구했다고 표시하지 않습니다.
