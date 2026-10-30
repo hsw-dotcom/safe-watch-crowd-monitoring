@@ -8,7 +8,7 @@
 src/python/    main.py, count_objects.py, stream.py, alarm.py, db.py, risk.py, settings.py, configs.ini
 src/web/       index.html, graph.html, map.html, image.html, api.php, assets/
 database/      schema.sql
- tests/         Python 순수 로직 테스트, 웹 구조 확인
+tests/         Python 순수 로직 테스트, 웹 구조 확인
  docs/          근거와 원본 보존 지점, 변경표, 검증 범위
 .env.example   개발자가 직접 제공할 환경변수 이름만
 ```
