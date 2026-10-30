@@ -1,11 +1,12 @@
--- Historical SQL submitted with the project; not a tested migration.
--- The database must be created separately and camera 1 inserted before data insert.
+sudo mysql -u root -p
+
 CREATE TABLE cameras (
   camera_number INT PRIMARY KEY AUTO_INCREMENT,
   location VARCHAR(100),
   status ENUM('active', 'inactive') DEFAULT 'active',
   last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+); 
+
 CREATE TABLE receive_data (
   id INT PRIMARY KEY AUTO_INCREMENT,
   camera_number INT DEFAULT '1',
@@ -13,16 +14,24 @@ CREATE TABLE receive_data (
   update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   danger_level ENUM('안전', '경고', '위험') DEFAULT '안전',
   FOREIGN KEY (camera_number) REFERENCES cameras(camera_number)
-);
+);	
+
 CREATE VIEW density AS
-SELECT current.id, current.camera_number, current.crowd_density,
-  CAST(CASE
-    WHEN previous.crowd_density IS NULL THEN 0
-    ELSE ((current.crowd_density - previous.crowd_density) / previous.crowd_density) * 100
-  END AS DECIMAL(5,2)) AS change_rate,
+SELECT
+  current.id,
+  current.camera_number,
+  current.crowd_density,
+  CAST(
+    CASE
+      WHEN previous.crowd_density IS NULL THEN 0
+      ELSE ((current.crowd_density - previous.crowd_density) / previous.crowd_density) * 100
+    END AS DECIMAL(5, 2)
+  ) AS change_rate,
   DATE_FORMAT(current.update_time, '%H:%i:%s') AS update_time
-FROM receive_data AS current
-LEFT JOIN receive_data AS previous
-  ON current.camera_number = previous.camera_number AND current.id = previous.id + 1;
--- Original test insertion:
--- INSERT INTO receive_data (crowd_density, danger_level) VALUES (4.11, '위험');
+FROM
+  receive_data AS current
+LEFT JOIN
+  receive_data AS previous ON current.camera_number = previous.camera_number
+                           AND current.id = previous.id + 1;
+
+INSERT INTO receive_data (crowd_density, danger_level) VALUES (4.11, '위험');
