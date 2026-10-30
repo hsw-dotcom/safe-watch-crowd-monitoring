@@ -1,10 +1,16 @@
-# 2023년 문제 해결 경험
+# Historical troubleshooting (2023)
 
-## MJPEG 영상 스트리밍
-개인 최종보고서에는 실시간 스트리밍이 여러 번 실패했으나 조사와 반복 수정 끝에 MJPEG 스트리밍에 성공했다고 기재되어 있습니다. 이 스트림은 웹 화면뿐 아니라 감지 프로그램에 프레임을 제공하는 역할도 맡았습니다. 현재 자료만으로 문제 원인이나 수정한 구체적인 설정값은 단정할 수 없습니다.
+## MJPEG camera streaming
 
-## 스피커 출력 위치
-USB 스피커가 연결돼도 Python에서 경고음이 나오지 않고, 브라우저 경고음은 모니터링 PC나 모바일에서 실행되는 문제가 보고되었습니다. alarm.py에는 aplay와 장치 hw:3를 지정하는 경로가 있습니다. 다만 위험 실제 상황과 SMS 전송까지 포함한 종단 시험은 확인되지 않습니다.
+The individual final report documents several failed attempts before the MJPEG stream displayed successfully in the website. The same camera stream was needed by frame-capture code feeding the object detector. Submitted source uses a Picamera2 MJPEG encoder and an HTTP server on port 8000. The report does not identify one reproducible root cause or exact sequence of fixes; do not claim a specific configuration tweak without evidence.
 
-## 검증된 한계
-10m 이상에서 탐지 성능 저하, 마네킹 오인식 등 환경 제약을 시험했습니다. 고정 면적 사용으로 절대 밀집도 정확도를 보증할 수 없습니다.
+## USB speaker vs browser audio
+
+The report describes that a physically connected speaker initially failed to play from Python, while browser audio could play on the viewing PC/mobile instead of the Raspberry Pi. The submitted `alarm.py` uses `subprocess.run(["aplay", "-D", "hw:3", ...])` to target an audio device. The report claims the intended arrangement was achieved after modifications. Separate field-triggered danger SMS+speaker playback was not validated because real testing did not reach the danger level.
+
+## Testing limitations
+
+- Raspberry Pi 4 and Camera Module 3 were used in 2023 but hardware is no longer available for retesting.
+- Model files and Flask SMS server script are not archived.
+- Fixed area value and limited recognition range constrained the accuracy of crowd density inference.
+- The known results are historical prototype tests rather than deployment to a real public safety infrastructure.
