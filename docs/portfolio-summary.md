@@ -1,10 +1,11 @@
-# Safe Watch — IT 인프라·시스템 운영 경험
+# Portfolio summary (for IT infrastructure / systems operations)
 
-- 기간: 2023.03~06 / 대학 캡스톤 / 4인 팀
-- 목표: CCTV 사람 탐지 결과를 DB에 기록하고 실시간 스트리밍·웹 모니터링·위험 알림을 연동하는 시제품 제작
-- 본인 담당(당시 개인 최종보고서 기준): 웹서버·DB 구축 관련 조사 및 구성, PHP 기반 동적 페이지, Pi 카메라 MJPEG 스트리밍, 경고음·SMS 구현
-- 팀원 담당: AI 학습·데이터셋/모델 적용, 밀집도 계산식 연구, Pi 하드웨어 구매·초기 설치 및 연결
-- 핵심 기술: Raspberry Pi OS, Python, Nginx, MariaDB, PHP, JavaScript/AJAX, Picamera2, OpenCV, TensorFlow Lite
-- 문제 해결: MJPEG 스트리밍 연결 문제와 USB 스피커 출력 대상 문제를 다뤘다는 기록이 있으며 상세 원인과 수정 로그는 남아 있지 않습니다.
-- 검증 자료: 야외·실내 웹 화면 동시 시연, DB 수동 입력값 반영, 위험 모달 출력
-- 한계: 현재 Pi 미보유·모델 파일 누락으로 재실행 미검증, 현장 위험 감지 후 SMS 전송 성공 미확인
+**Project:** Safe Watch — camera-based density monitoring and alert prototype (2023, four-person university capstone).
+
+**Documented individual responsibilities:** Web server/DB research and setup; Nginx+PHP/MariaDB based dynamic monitoring web pages; Raspberry Pi camera stream integration; WAV warning and SMS integration efforts. The AI model training and early device procurement/assembly were principally assigned to other teammates.
+
+**Observed evidence:** VNC session, Raspberry Pi and DB terminals, local-network dashboard, object detection overlay, DB-driven web graphs and danger dialog, on-campus indoor/outdoor testing.
+
+**Troubleshooting:** MJPEG stream integration and speaker-output routing were described in the contemporaneous individual report; exact root causes and remediation commands are not fully preserved.
+
+**Scope of conclusion:** A functioning prototype was demonstrated at the time. There is no current hardware, full model bundle or verified deployment guide. Do not claim production deployment, high recognition accuracy, 1-second end-to-end latency, or successful danger-event SMS delivery.
