@@ -1,0 +1,23 @@
+# Local secrets and private data
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.mp4
+*.mov
+*.jpg
+*.jpeg
+*.png
+*.pdf
+*.pptx
+*.docx
+*.tflite
+*.wav
+models/
+tensorFlow/
+tensorflow/
+image/
+__pycache__/
+*.pyc
