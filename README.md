@@ -11,6 +11,23 @@
 
 발표자료와 원본 코드가 일치하지 않는 경우 **원본 코드를 임의로 고쳐 ‘원본’이라고 부르지 않고, 불일치를 명시**합니다. 예: 최종 발표의 위험 단계는 안전 1~2명, 경고 3~4명, 위험 5명 이상이지만, 보관 `main.py`는 `인원 수 ÷ 고정 면적`으로 단계 판정합니다.
 
+
+## 시스템 구성 (2023년 소스 연결 구조)
+
+```mermaid
+flowchart TD
+  A[Raspberry Pi Camera Module] --> B[Picamera2 MJPEG stream.py]
+  B --> C[main.py 프레임 저장]
+  C --> D[count_objects.py TFLite 탐지]
+  D --> E[인원수·고정면적 기반 밀집도]
+  E --> F[(MariaDB receive_data)]
+  F --> G[Nginx·PHP·AJAX 모니터링]
+  F --> H[alarm.py 위험 단계 조회]
+  H --> I[WAV 경고·Twilio SMS 경로]
+```
+
+그림은 보존된 코드들의 **연결 의도와 구현 경로**를 설명합니다. 실제 SMS 수신은 별도 사진으로 확인됐으나, 실시간 카메라 위험값이 그 SMS를 발생시켰는지는 미확인입니다.
+
 ## 실제 원본 코드 배치
 
 ```text
