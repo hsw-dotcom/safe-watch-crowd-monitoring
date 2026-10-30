@@ -1,89 +1,122 @@
-"""2023 model-inference path reconstructed from original count_objects.py.
+######## Webcam Object Detection Using Tensorflow-trained Classifier #########
+#
+# Author: Evan Juras
+# Date: 11/11/22
+# Description: 
+# This program uses a TensorFlow Lite object detection model to perform object 
+# detection on an image or a folder full of images. It draws boxes and scores 
+# around the objects of interest in each image.
+#
+# This code is based off the TensorFlow Lite image classification example at:
+# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/examples/python/label_image.py
+#
+# I added my own method of drawing boxes and labels using OpenCV.
 
-The model is loaded as a fixed TFLite file; this module does NOT train,
-convert, or alter model weights after export. Only image detection is used.
-The original disabled obstacle detection, which remains disabled here.
-"""
+# Import packages
 import os
-from pathlib import Path
+import argparse
+import cv2
 import numpy as np
+import sys
+import glob
+import importlib.util
+import matplotlib.pyplot as plt
+from tflite_runtime.interpreter import Interpreter
 
-HERE = Path(__file__).resolve().parent
-MODEL = HERE / 'models' / 'people_detect.tflite'
-LABEL = HERE / 'models' / 'people_label.txt'
-INPUT_IMAGE = HERE / 'image' / 'before.jpg'
-OUTPUT_IMAGE = Path(os.getenv('SAFEWATCH_AFTER_IMAGE', '/var/www/html/tensorflow/after.jpg'))
-MIN_CONFIDENCE = 0.2  # original threshold
-PERSON_CLASS_ID = 0   # original class
+width, height = 640, 640 # image width, height
+min_conf_threshold = 0.2 # confidecne level
+input_mean = 127.5
+input_std = 127.5
+image_path = '/home/pi/project/image/before.jpg'
+output_path = '/var/www/html/tensorflow/'
 
 
-def load_model():
-    """Load the already-exported model without modification, like 2023 code."""
-    if not MODEL.is_file() or not LABEL.is_file():
-        raise FileNotFoundError('2023 TFLite model/label assets are not available')
-    try:
-        from tflite_runtime.interpreter import Interpreter
-    except ImportError:
-        from tensorflow.lite.python.interpreter import Interpreter
-    interpreter = Interpreter(model_path=str(MODEL))
+def detect():
+    base_path = 'models/'
+    people_model = base_path + 'people_detect.tflite'
+    people_label = base_path + 'people_label.txt'
+    obstacle_model = base_path + 'obstacle_detect.tflite'
+    obstacle_label = base_path + 'obstacle_label.txt'
+
+    image = cv2.imread(image_path)
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    imH, imW, _ = image.shape
+    image_resized = cv2.resize(image_rgb, (width, height))
+    input_data = np.expand_dims(image_resized, axis=0)
+
+    people_boxes, people_classes, people_scores, people_labels = load_model(people_model, people_label, input_data)
+#    obstacle_boxes, obstacle_classes, obstacle_scores, obstacle_labels = load_model(obstacle_model, obstacle_label)
+
+    obstacle_classes = []
+
+    people_num = 0
+    for i in range(len(people_scores)):
+        if people_scores[i] >= min_conf_threshold and people_classes[i] == 0:
+            people_num += 1
+
+    print("감지된 인원 수 :", people_num)
+
+    draw_boxes(people_boxes, people_classes, people_scores, people_labels, (0, 255, 0), image)
+    #    draw_boxes(obstacle_boxes, obstacle_classes, obstacle_scores, obstacle_labels, (255, 0, 0))
+    cv2.imwrite(output_path + 'after.jpg', image)
+
+    return people_num, obstacle_classes
+
+
+def load_model(model_path, label_path, input_data):
+    input_data_l = input_data
+    # Load the label map
+    with open(label_path, 'r') as f:
+        labels = [line.strip() for line in f.readlines()]
+
+    interpreter = Interpreter(model_path=model_path)
     interpreter.allocate_tensors()
-    labels = LABEL.read_text(encoding='utf-8-sig').splitlines()
-    return interpreter, labels
 
+    # Get model details
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+    floating_model = (input_details[0]['dtype'] == np.float32)
 
-def get_outputs(interpreter):
-    details = interpreter.get_output_details()
-    if len(details) < 3:
-        raise RuntimeError('지원하지 않는 모델 출력 구조입니다.')
-    out_name = details[0]['name']
-    if 'StatefulPartitionedCall' in out_name:
+    # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
+    if floating_model:
+        input_data_l = (np.float32(input_data_l) - input_mean) / input_std
+
+    outname = output_details[0]['name']
+    if ('StatefulPartitionedCall' in outname):  # This is a TF2 model
         boxes_idx, classes_idx, scores_idx = 1, 3, 0
-    else:
+    else:  # This is a TF1 model
         boxes_idx, classes_idx, scores_idx = 0, 1, 2
-    if max(boxes_idx, classes_idx, scores_idx) >= len(details):
-        raise RuntimeError('모델 출력 텐서를 확인해야 합니다.')
-    boxes = np.asarray(interpreter.get_tensor(details[boxes_idx]['index']))[0]
-    classes = np.asarray(interpreter.get_tensor(details[classes_idx]['index']))[0]
-    scores = np.asarray(interpreter.get_tensor(details[scores_idx]['index']))[0]
-    return boxes, classes, scores
 
-
-def detect(image_path=None, output_path=None):
-    """Return (people_count, disabled_obstacle_classes) as original did."""
-    import cv2
-    src = Path(image_path) if image_path else INPUT_IMAGE
-    dst = Path(output_path) if output_path else OUTPUT_IMAGE
-    image = cv2.imread(str(src))
-    if image is None:
-        raise FileNotFoundError(f'인식할 이미지를 찾을 수 없습니다: {src}')
-    interpreter, labels = load_model()
-    input_details = interpreter.get_input_details()[0]
-    ih, iw = (int(v) for v in input_details['shape'][1:3])
-    resized = cv2.resize(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), (iw, ih))
-    data = np.expand_dims(resized, axis=0)
-    if input_details['dtype'] == np.float32:
-        data = (data.astype(np.float32) - 127.5) / 127.5
-    interpreter.set_tensor(input_details['index'], data)
+    # Perform the actual detection by running the model with the image as input
+    interpreter.set_tensor(input_details[0]['index'], input_data_l)
     interpreter.invoke()
-    boxes, classes, scores = get_outputs(interpreter)
-    h, w = image.shape[:2]
-    people_count = 0
-    for bbox, cls, score in zip(boxes, classes, scores):
-        if float(score) < MIN_CONFIDENCE or int(cls) != PERSON_CLASS_ID:
-            continue
-        people_count += 1
-        ymin, xmin, ymax, xmax = (float(v) for v in bbox)
-        x1 = max(0, min(w - 1, int(xmin * w)))
-        x2 = max(0, min(w - 1, int(xmax * w)))
-        y1 = max(0, min(h - 1, int(ymin * h)))
-        y2 = max(0, min(h - 1, int(ymax * h)))
-        cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        if 0 <= int(cls) < len(labels):
-            caption = f'{labels[int(cls)]}: {float(score):.0%}'
-            cv2.putText(image, caption, (x1, max(20, y1 - 5)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    # 2023 source overwrote after.jpg directly, not via an atomic tmp file.
-    if not cv2.imwrite(str(dst), image):
-        raise OSError(f'검출 이미지 저장에 실패했습니다: {dst}')
-    return people_count, []
+
+    # Retrieve detection results
+    boxes = interpreter.get_tensor(output_details[boxes_idx]['index'])[0]  # Bounding box coordinates of detected objects
+    classes = interpreter.get_tensor(output_details[classes_idx]['index'])[0]  # Class index of detected objects
+    scores = interpreter.get_tensor(output_details[scores_idx]['index'])[0]  # Confidence of detected objects
+    return boxes, classes, scores, labels
+
+
+def draw_boxes(boxes, classes, scores, labels, box_color, image):
+    imW, imH = 1920, 1080
+    # Loop over all detections and draw detection box if confidence is above minimum threshold
+    for i in range(len(scores)):
+        if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0) and classes[i] == 0):
+            # Get bounding box coordinates and draw box
+            # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
+            ymin = int(max(1,(boxes[i][0] * imH)))
+            xmin = int(max(1,(boxes[i][1] * imW)))
+            ymax = int(min(imH,(boxes[i][2] * imH)))
+            xmax = int(min(imW,(boxes[i][3] * imW)))
+
+            cv2.rectangle(image, (xmin,ymin), (xmax,ymax), box_color, 2) # hbox
+
+            # Draw label
+            object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
+            label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
+            labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
+            label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
+#            cv2.rectangle(image, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED)  # Draw white box to put label text in
+#            cv2.putText(image, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+

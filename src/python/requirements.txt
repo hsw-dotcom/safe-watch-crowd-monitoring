@@ -1,7 +1,0 @@
-# Raspberry Pi OS: picamera2/libcamera should normally be installed through apt.
-# tflite-runtime availability depends on Pi OS / CPU / Python version; install a matching wheel.
-numpy
-opencv-python
-mysql-connector-python
-twilio
-# tflite-runtime   # install compatible build separately

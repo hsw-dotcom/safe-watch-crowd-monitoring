@@ -1,21 +1,354 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Safe Watch - 군중 밀집도 모니터링</title><link rel="stylesheet" href="assets/style.css"></head>
-<body><header><h1>Safe Watch</h1><p>AI 기반 군중 밀집도 감지 모니터링 · 2023 캡스톤 재구성본</p></header>
-<main><div class="cameras">
-  <section class="panel"><h2>실시간 카메라 영상</h2><iframe class="camera-frame" id="live-camera" data-src="http://RPI_IP_ADDRESS:8000/index.html" title="실시간 카메라"></iframe></section>
-  <section class="panel"><h2>인원 인식 결과</h2><iframe class="camera-frame" id="detected-camera" data-src="image.html" title="인원 인식 이미지"></iframe></section>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Watch</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    
+    #header {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 22px;
+      font-size: 26px;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    #content {
+      padding: 15px;
+      text-align: center;
+    }
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 6px;
+      align-items: center;
+
+    }
+
+
+    @media screen and (min-width:1200px) {
+      p {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 12px;
+        text-align: center;
+      }
+      p0 {
+        font-size: 20px;
+        font-weight: bold;
+        margin: 0px;
+        text-align: center;
+      }
+      .button-1 {
+        width: 220px;
+        height: 100px;
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+       font-size: 28px;
+        margin: 6px;
+        cursor: pointer;
+        justify-content: center;
+      }
+      .button-2 {
+        width: 220px;
+        height: 100px;
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+       font-size: 28px;
+        margin: 6px;
+        cursor: pointer;
+        justify-content: center;
+      }
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .video-column {
+      width: 48%;
+    }
+
+    .info-column {
+      width: 50%; 
+    }
+
+    .video {
+      width: 826px;
+      height: 490px;
+    }
+    .info {
+      width: 1200px;
+      height: 200px;
+    }
+    }
+
+    @media screen and (min-width:900px) and (max-width:1199px) {
+      p {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 8px;
+        text-align: center;
+      }
+      p0 {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0px;
+        text-align: center;
+      }
+      .button-1 {
+        width: 180px;
+        height: 100px;
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px;
+        cursor: pointer;
+        justify-content: center;
+      }
+      .button-2 {
+        width: 180px;
+        height: 100px;
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px;
+        cursor: pointer;
+        justify-content: center;
+      }
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .video-column {
+      width: 48%;
+    }
+
+    .info-column {
+      width: 40%; 
+    }
+
+    .video {
+      width: 440px;
+      height: 330px;
+    }
+    .info {
+      width: 600px;
+      height: 200px;
+    }
+    }
+    @media screen and (min-width:700px) and (max-width:899px) {
+      p {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 8px;
+        text-align: center;
+      }
+      p0 {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0px;
+        text-align: center;
+      }
+      .button-1 {
+        width: 130px;
+        height: 100px;
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px;
+        cursor: pointer;
+        justify-content: center;
+      }
+      .button-2 {
+        width: 130px;
+        height: 100px;
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px;
+        cursor: pointer;
+        justify-content: center;
+      }
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .video-column {
+      width: 48%;
+    }
+
+    .info-column {
+    }
+
+    .video {
+      width: 350px;
+      height: 290px;
+    }
+    .info {
+      width: 430px;
+      height: 200px;
+    }
+    }
+
+    @media screen and (max-width:699px) {
+      p {
+        font-size: 20px;
+        font-weight: bold;
+        margin: 4px;
+        text-align: center;
+      }
+      p0 {
+        font-size: 14px;
+        font-weight: bold;
+        margin: 0px;
+        text-align: center;
+      }
+      .button-1 {
+        width: 130px;
+        height: 100px;
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 4px 6px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+       font-size: 8px;
+        margin: 2px;
+        cursor: pointer;
+        justify-content: center;
+      }
+      .button-2 {
+        width: 130px;
+        height: 100px;
+        background-color: gray;
+        border: none;
+        color: white;
+        padding: 4px 6px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+       font-size: 8px;
+        margin: 2px;
+        cursor: pointer;
+        justify-content: center;
+      }
+   .container {
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+   }
+    .video {
+      width: 390px;
+      height: 270px;
+    }
+    .info {
+      width: 390px;
+      height: 200px;
+    }
+    }
+
+    .infob {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header">
+    <h1>Safe Watch</h1>
+    <p style="text-align: center; font-size: 22px; margin-top: 10px;">
+      AI 기반 압사 방지 CCTV입니다.<br>
+    </p>
+  </div>
+  <div class="container">
+    <div class="video-column">
+      <div id="content">
+         <iframe class="video" src="http://RPI_IP_ADDRESS:8000/"></iframe>
+
+         <p0><br>실시간 영상</p>
+      </div>
+    </div>
+   <div class="video-column">
+      <div id="content">
+         <iframe class="video" src="image.php"></iframe>
+         <p0><br>사람 인식 화면</p>
+      </div>
+    </div>
+    
+  </div>
+
+<div class="container">
+      <div class="button-container">
+        <a href="graph.html" title="밀집도 그래프 보기">
+          <button class="button button-1">
+            <p class="infob">밀집도<br>그래프</p>
+          </button>
+        </a>
+        <a href="map.html" title="지도상  CCTV  위치">
+          <button class="button button-2">
+            <p class="infob">CCTV<br>위치</p>
+          </button>
+        </a>
+      </div>
+      <div id="content">
+         <iframe class="info" src="maininfo.html"></iframe>
+      </div>
+    </div>
+
 </div>
-<div id="status" class="status">
-  <div class="metric"><small>구역</small><b>명지대학교 골목 1</b></div>
-  <div class="metric"><small>현재 시각</small><b id="time">—</b></div>
-  <div class="metric"><small>군중 밀집도</small><b><span id="density">—</span></b></div>
-  <div class="metric risk"><small>위험 수준</small><b id="level">—</b></div>
-</div>
-<p id="demo-label" class="details" hidden>시연용 합성 데이터: 실제 군중 측정값이 아닙니다.</p>
-<p class="details">최근 측정: <span id="measured">—</span> · 카메라 1 · 위험 판단은 설정된 구역·기준값에 종속</p>
-<p class="details" id="error" aria-live="polite"></p>
-<div id="danger-notice" class="notice hidden" role="alert">위험 수준이 감지되었습니다. 실제 상황은 현장 확인이 필요합니다.</div>
-<div class="menu"><a id="graphs-link" href="graph.html">밀집도 그래프</a><a href="map.html">CCTV 위치</a>
-  <button id="enable-audio" type="button">브라우저 경고음 켜기</button></div>
-<audio id="alarm-audio" preload="none" src="warning.wav"></audio>
-</main><script src="assets/dashboard.js"></script></body></html>
+</body>
+</html>
+ 

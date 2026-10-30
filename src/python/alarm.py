@@ -1,72 +1,75 @@
-"""2023 warning loop: poll MariaDB every 10 seconds and alert while 위험.
-
-The 2023 original did not have a 300-second cooldown or transition filtering.
-SMS is opt-in in this archival reconstruction to prevent accidental messages.
-"""
-import logging
 import os
-import subprocess
+import mysql.connector
 import time
-from pathlib import Path
-from db import latest_measurement
+import subprocess
+from twilio.rest import Client
 
-LOG = logging.getLogger('alarm')
-HERE = Path(__file__).resolve().parent
+device = "hw:3"
 
+# Twilio 계정 정보
+account_sid = os.environ['TWILIO_ACCOUNT_SID']
+auth_token = os.environ['TWILIO_AUTH_TOKEN']
+twilio_number = os.environ['TWILIO_FROM_NUMBER']
+
+def get_danger_level():
+    # MySQL 서버 접속 설정
+    db_config = {
+        "host": "localhost",
+        "user": os.getenv("SAFEWATCH_DB_USER", "root"),
+        "password": os.environ["SAFEWATCH_DB_PASSWORD"],
+        "database": "safewatch"
+    }
+
+    # 데이터베이스 연결
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+
+    # 쿼리 실행
+    query = "SELECT danger_level FROM receive_data ORDER BY id DESC LIMIT 1;"
+    cursor.execute(query)
+
+    # 결과 가져오기
+    result = cursor.fetchone()
+    danger_level = result[0] if result else None
+
+    # 연결 종료
+    cursor.close()
+    conn.close()
+
+    return danger_level
 
 def send_sms(danger_level):
-    if os.getenv('SAFEWATCH_ENABLE_SMS', '0') != '1':
-        LOG.debug('SMS disabled for code-only reconstruction')
-        return False
-    sid = os.getenv('TWILIO_ACCOUNT_SID')
-    token = os.getenv('TWILIO_AUTH_TOKEN')
-    sender = os.getenv('TWILIO_FROM_NUMBER')
-    recipient = os.getenv('ALERT_RECIPIENT')
-    if not all((sid, token, sender, recipient)):
-        LOG.warning('Twilio configuration missing; request not sent')
-        return False
-    from twilio.rest import Client
-    Client(sid, token).messages.create(
-        body=f'명지대학교 골목1, 위험수준 [{danger_level}]',
-        from_=sender, to=recipient)
-    return True
+    # Twilio 클라이언트 생성
+    client = Client(account_sid, auth_token)
+
+    try:
+        recipients = [os.environ['ALERT_RECIPIENT']]
+        for recipient in recipients: 
+            # SMS 메시지 생성 및 전송
+            message = client.messages.create(
+                 body="명지대학교 골목1, 위험수준 [" + danger_level + "]",
+                 from_=twilio_number,
+                 to=recipient
+            )
+
+        return "SMS sent"
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+def play_sound(file_path):
+    # 외부 프로그램 실행
+    subprocess.run(["aplay", "-D", device, "--disable-resample", file_path])
 
 
-def play_sound(filename='warning.wav'):
-    wav = Path(os.getenv('SAFEWATCH_WARNING_WAV', str(HERE / filename)))
-    if not wav.is_file():
-        LOG.warning('경고음 파일을 찾을 수 없습니다: %s', wav)
-        return False
-    subprocess.run(['aplay', '-D', os.getenv('SAFEWATCH_AUDIO_DEVICE', 'default'),
-                    str(wav)], check=True, timeout=60)
-    return True
 
+# 주기적으로 데이터베이스에서 위험 단계 확인하고, 소리 재생
+while True:
+    danger_level = get_danger_level()
+    if danger_level == "위험":
+        # 소리 재생 코드 작성
+        send_sms(danger_level)
+        play_sound("warning.wav")
 
-def alert_if_danger(danger_level, sound=play_sound, sms=send_sms):
-    """Historical behavior: repeat alarm and SMS on EVERY danger poll."""
-    if danger_level != '위험':
-        return False
-    for callback, args in ((sms, ('위험',)), (sound, ())):
-        try:
-            callback(*args)
-        except Exception:
-            LOG.exception('경고 채널 호출 실패')
-    return True
-
-
-def main():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
-    interval = max(1, float(os.getenv('SAFEWATCH_ALARM_POLL_SECONDS', '10')))
-    while True:
-        try:
-            row = latest_measurement()
-            alert_if_danger(row['danger_level'] if row else None)
-            LOG.info('작동 중...')
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except Exception:
-            LOG.exception('DB 조회 오류')
-        time.sleep(interval)
-
-if __name__ == '__main__':
-    main()
+    print("작동 중...")
+    # 일정 시간 대기
+    time.sleep(10)  # 10초 간격으로 데이터베이스에서 위험 단계 확인
