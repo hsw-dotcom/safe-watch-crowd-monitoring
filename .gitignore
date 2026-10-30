@@ -1,10 +1,12 @@
-# Local secrets and private data
+# Credentials and local configuration
 .env
 .env.*
 !.env.example
 *.pem
 *.key
 *.p12
+
+# Private and personal media
 *.mp4
 *.mov
 *.jpg
@@ -13,11 +15,13 @@
 *.pdf
 *.pptx
 *.docx
+
+# Model binaries and outputs
 *.tflite
 *.wav
 models/
-tensorFlow/
 tensorflow/
 image/
 __pycache__/
 *.pyc
+.ipynb_checkpoints/
