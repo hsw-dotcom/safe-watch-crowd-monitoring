@@ -1,22 +1,26 @@
 #!/usr/bin/python3
+
 # This is the same as mjpeg_server.py, but uses the h/w MJPEG encoder.
+
 import io
 import logging
 import socketserver
 from http import server
 from threading import Condition
 import libcamera
+
 from picamera2 import Picamera2
 from picamera2.encoders import MJPEGEncoder
 from picamera2.outputs import FileOutput
 
-PAGE = """\\
+PAGE = """\
 <html>
 <body>
 <img src="stream.mjpg" width="802" height="474" />
 </body>
 </html>
 """
+
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
@@ -27,6 +31,7 @@ class StreamingOutput(io.BufferedIOBase):
         with self.condition:
             self.frame = buf
             self.condition.notify_all()
+
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -60,20 +65,24 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     self.wfile.write(frame)
                     self.wfile.write(b'\r\n')
             except Exception as e:
-                logging.warning('Removed streaming client %s: %s',
-                                self.client_address, str(e))
+                logging.warning(
+                    'Removed streaming client %s: %s',
+                    self.client_address, str(e))
         else:
             self.send_error(404)
             self.end_headers()
+
 
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
+
 picam2 = Picamera2()
 picam2.configure(picam2.create_video_configuration(main={"size": (1920, 1080)}))
 output = StreamingOutput()
 picam2.start_recording(MJPEGEncoder(), FileOutput(output))
+
 try:
     address = ('', 8000)
     server = StreamingServer(address, StreamingHandler)
