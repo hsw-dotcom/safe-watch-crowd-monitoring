@@ -29,7 +29,7 @@ Raspberry Pi 4 + Camera Module 3
 - Hardware/OS: Raspberry Pi 4, Camera Module 3, Raspberry Pi OS/Raspbian, VNC, SSH
 - Application: Python, Picamera2, OpenCV, TensorFlow Lite, Nginx, PHP, HTML/CSS/JavaScript, AJAX, Chart.js
 - Data: MariaDB, `mysql.connector`, PHP MySQLi, SQL tables and VIEW
-- Alert: USB speaker using `aplay`, Twilio SMS integration code
+- Alert: USB speaker using `aplay`, Twilio SMS integration code; **historical SMS receipt independently evidenced by a phone screenshot**
 
 ## Work division (from contemporaneous final report)
 
@@ -48,8 +48,9 @@ The submitted code is an archive of **team output**; file authorship cannot be i
 - Historical photos and video show local-network access to the monitoring page, camera view, recognition output, and risk display.
 - A recorded database test shows **manually inserted measurements** reflected in the web status and graphs.
 - A recorded test shows the **risk modal dialog** for a danger measurement.
+- A later-supplied 2023 phone screenshot confirms **receipt of multiple Twilio trial-account danger-alert SMS messages** matching the format in `alarm.py`. [Evidence and limitations](docs/sms-receipt-evidence-2023.md).
 - Outdoor and indoor tests identified practical recognition limits; the report notes unreliable recognition at longer distances and false positives for mannequins.
-- **Not verified:** field-triggered danger alert + SMS delivery, end-to-end reproducibility today, quantitative model accuracy, automatic daemon/service restart.
+- **Not verified:** end-to-end **camera-detected real crowd danger → SMS** (as opposed to manually induced/test danger states), the exact sending process responsible for the screenshot, end-to-end reproducibility today, quantitative model accuracy, automatic daemon/service restart.
 
 Historical videos/reports containing people, phone numbers and account information are intentionally **not published**.
 
